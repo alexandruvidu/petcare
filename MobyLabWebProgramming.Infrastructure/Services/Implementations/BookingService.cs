@@ -55,20 +55,17 @@ public class BookingService(IRepository<WebAppDatabaseContext> repository) : IBo
 
         var isClient = booking.ClientId == userId;
         var isSitter = booking.SitterId == userId;
-
-        // Only the sitter or client can modify depending on the field
+        
         if (!isClient && !isSitter)
         {
             return ServiceResponse.FromError(new(HttpStatusCode.Forbidden, "You are not authorized to update this booking.", ErrorCodes.CannotUpdate));
         }
-
-        // Allow sitter to update status
+        
         if (dto.Status.HasValue)
         {
             booking.Status = dto.Status.Value;
         }
-
-        // Allow client to update basic info
+        
         if (isClient)
         {
             if (dto.StartDate.HasValue)

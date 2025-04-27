@@ -1,5 +1,4 @@
-﻿using System.Net;
-using MobyLabWebProgramming.Core.Constants;
+﻿using MobyLabWebProgramming.Core.Constants;
 using MobyLabWebProgramming.Core.DataTransferObjects;
 using MobyLabWebProgramming.Core.Entities;
 using MobyLabWebProgramming.Core.Enums;
@@ -24,7 +23,7 @@ public class UserService(
     {
         var result = await repository.GetAsync(new UserSpec(login.Email), cancellationToken);
         if (result == null) return ServiceResponse.FromError<LoginResponseDTO>(CommonErrors.UserNotFound);
-        if (result.Password != login.Password) return ServiceResponse.FromError<LoginResponseDTO>(new(HttpStatusCode.BadRequest, "Invalid credentials.", ErrorCodes.WrongPassword));
+        if (result.Password != login.Password) return ServiceResponse.FromError<LoginResponseDTO>(CommonErrors.InvalidCredentials);
 
         var userDto = new UserDTO { Id = result.Id, Name = result.Name, Email = result.Email, Phone = result.Phone, Role = result.Role };
         var token = loginService.GetToken(userDto, DateTime.UtcNow, TimeSpan.FromDays(7));
@@ -69,7 +68,7 @@ public class UserService(
 public async Task<ServiceResponse> UpdateUser(UserUpdateDTO dto, UserDTO? requestingUser, CancellationToken cancellationToken = default)
 {
     if (requestingUser == null)
-        return ServiceResponse.FromError(CommonErrors.Forbidden); // Add this if you haven’t yet.
+        return ServiceResponse.FromError(CommonErrors.Forbidden);
 
     var user = await repository.GetAsync(new UserSpec(requestingUser.Id), cancellationToken);
     if (user == null)

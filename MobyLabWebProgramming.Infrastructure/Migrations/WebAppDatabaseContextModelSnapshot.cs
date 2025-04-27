@@ -67,7 +67,7 @@ namespace MobyLabWebProgramming.Infrastructure.Migrations
 
                     b.HasIndex("SitterId");
 
-                    b.ToTable("Bookings");
+                    b.ToTable("Booking");
                 });
 
             modelBuilder.Entity("MobyLabWebProgramming.Core.Entities.Pet", b =>
@@ -107,7 +107,7 @@ namespace MobyLabWebProgramming.Infrastructure.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("Pets");
+                    b.ToTable("Pet");
                 });
 
             modelBuilder.Entity("MobyLabWebProgramming.Core.Entities.Review", b =>
@@ -151,7 +151,7 @@ namespace MobyLabWebProgramming.Infrastructure.Migrations
 
                     b.HasIndex("SitterId");
 
-                    b.ToTable("Reviews");
+                    b.ToTable("Review");
                 });
 
             modelBuilder.Entity("MobyLabWebProgramming.Core.Entities.SitterProfile", b =>
@@ -190,7 +190,7 @@ namespace MobyLabWebProgramming.Infrastructure.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("SitterProfiles");
+                    b.ToTable("SitterProfile");
                 });
 
             modelBuilder.Entity("MobyLabWebProgramming.Core.Entities.User", b =>
@@ -228,7 +228,7 @@ namespace MobyLabWebProgramming.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("User");
                 });
 
             modelBuilder.Entity("MobyLabWebProgramming.Core.Entities.Booking", b =>

@@ -20,7 +20,7 @@ public static class CommonErrors
         new(HttpStatusCode.Forbidden, "You are not authorized to perform this action.", ErrorCodes.Unauthorized);
 
     public static ErrorMessage InvalidCredentials =>
-        new(HttpStatusCode.BadRequest, "Invalid email or password.", ErrorCodes.WrongPassword);
+        new(HttpStatusCode.BadRequest, "Wrong email or password.", ErrorCodes.WrongPassword);
 
     public static ErrorMessage InvalidData =>
         new(HttpStatusCode.BadRequest, "Some of the provided data is invalid.", ErrorCodes.InvalidData);
