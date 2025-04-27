@@ -11,6 +11,7 @@ import Register from './pages/auth/Register';
 // Public Pages
 import Home from './pages/Home';
 import About from './pages/About';
+import PublicSitterReviews from './pages/sitter/PublicSitterReviews';
 
 // Client Pages
 import ClientDashboard from './pages/client/Dashboard';
@@ -20,7 +21,7 @@ import SittersList from './pages/client/SittersList';
 
 // Sitter Pages
 import SitterDashboard from './pages/sitter/Dashboard';
-// import SitterBookingsTable from './pages/sitter/BookingsTable';
+import SitterBookingsView from './pages/sitter/SitterBookingsView';
 import SitterReviews from './pages/sitter/SitterReviews';
 import SitterProfile from './pages/sitter/SitterProfile';
 
@@ -55,6 +56,7 @@ function App() {
             <Route path="/about" element={<About />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/sitter-reviews/:sitterId" element={<PublicSitterReviews />} />
             
             {/* Client Routes */}
             <Route 
@@ -103,7 +105,7 @@ function App() {
               path="/sitter/bookings" 
               element={
                 <ProtectedRoute allowedRoles={['Sitter']}>
-                  <ClientBookingsTable />
+                  <SitterBookingsView />
                 </ProtectedRoute>
               } 
             />

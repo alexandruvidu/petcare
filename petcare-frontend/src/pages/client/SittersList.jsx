@@ -11,6 +11,7 @@ const SittersList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedSitter, setSelectedSitter] = useState(null);
   const [sitterProfile, setSitterProfile] = useState(null);
+  const [sitterReviews, setSitterReviews] = useState({});
   const [pets, setPets] = useState([]);
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [bookingData, setBookingData] = useState({
@@ -44,8 +45,12 @@ const SittersList = () => {
           
           // We need to filter sitters to only show those with completed profiles
           const sittersWithProfiles = await filterSittersWithProfiles(allSitters, token);
-          setSitters(sittersWithProfiles);
-          setFilteredSitters(sittersWithProfiles);
+          
+          // Fetch reviews for each sitter
+          const sittersWithReviews = await fetchSittersReviews(sittersWithProfiles, token);
+          
+          setSitters(sittersWithReviews);
+          setFilteredSitters(sittersWithReviews);
         }
 
         if (petsResponse.data && petsResponse.data.response) {
@@ -73,9 +78,12 @@ const SittersList = () => {
           headers: { Authorization: `Bearer ${token}` }
         });
         
-        // If profile exists, add sitter to the list
+        // If profile exists, add sitter to the list with profile data
         if (profileResponse.data && profileResponse.data.response) {
-          sittersWithProfiles.push(sitter);
+          sittersWithProfiles.push({
+            ...sitter,
+            profile: profileResponse.data.response
+          });
         }
       } catch (err) {
         // Skip sitters with no profile
@@ -84,6 +92,47 @@ const SittersList = () => {
     }
 
     return sittersWithProfiles;
+  };
+
+  // Function to fetch reviews for each sitter
+  const fetchSittersReviews = async (sittersList, token) => {
+    const reviewsMap = {};
+    
+    for (const sitter of sittersList) {
+      try {
+        const reviewsResponse = await axios.get(`http://localhost:5000/api/Review/GetForSitter/${sitter.id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        
+        if (reviewsResponse.data && reviewsResponse.data.response) {
+          const reviews = reviewsResponse.data.response;
+          let totalRating = 0;
+          
+          reviews.forEach(review => {
+            totalRating += review.rating;
+          });
+          
+          const avgRating = reviews.length > 0 ? totalRating / reviews.length : 0;
+          
+          reviewsMap[sitter.id] = {
+            count: reviews.length,
+            averageRating: avgRating
+          };
+        } else {
+          reviewsMap[sitter.id] = { count: 0, averageRating: 0 };
+        }
+      } catch (err) {
+        reviewsMap[sitter.id] = { count: 0, averageRating: 0 };
+      }
+    }
+    
+    setSitterReviews(reviewsMap);
+    
+    // Return sitters with their reviews data
+    return sittersList.map(sitter => ({
+      ...sitter,
+      reviews: reviewsMap[sitter.id] || { count: 0, averageRating: 0 }
+    }));
   };
 
   useEffect(() => {
@@ -101,19 +150,11 @@ const SittersList = () => {
   }, [searchTerm, sitters]);
 
   const fetchSitterProfile = async (sitterId) => {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`http://localhost:5000/api/SitterProfile/Get/${sitterId}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      
-      if (response.data && response.data.response) {
-        setSitterProfile(response.data.response);
-      } else {
-        setSitterProfile(null);
-      }
-    } catch (err) {
-      console.error('Error fetching sitter profile:', err);
+    // Since we already have the profile data from initial load, just find the sitter
+    const sitter = sitters.find(s => s.id === sitterId);
+    if (sitter && sitter.profile) {
+      setSitterProfile(sitter.profile);
+    } else {
       setSitterProfile(null);
     }
   };
@@ -146,6 +187,18 @@ const SittersList = () => {
   const handleBookingSubmit = async (e) => {
     e.preventDefault();
     
+    // Validate required fields
+    if (!bookingData.startDate || !bookingData.endDate || !bookingData.petId) {
+      setError('Please fill in all required fields');
+      return;
+    }
+    
+    // Check that end date is after start date
+    if (new Date(bookingData.endDate) <= new Date(bookingData.startDate)) {
+      setError('End date must be after start date');
+      return;
+    }
+    
     try {
       const token = localStorage.getItem('token');
       
@@ -162,6 +215,25 @@ const SittersList = () => {
       console.error('Error creating booking:', err);
       setError('Failed to create booking. Please try again.');
     }
+  };
+
+  // Render star rating
+  const renderStarRating = (rating) => {
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating - fullStars >= 0.5;
+    const stars = [];
+    
+    for (let i = 1; i <= 5; i++) {
+      if (i <= fullStars) {
+        stars.push(<span key={i} className="text-yellow-400">★</span>);
+      } else if (i === fullStars + 1 && hasHalfStar) {
+        stars.push(<span key={i} className="text-yellow-400">★</span>);
+      } else {
+        stars.push(<span key={i} className="text-gray-300">★</span>);
+      }
+    }
+    
+    return <div className="flex">{stars}</div>;
   };
 
   // Calculate pagination
@@ -241,21 +313,38 @@ const SittersList = () => {
                     </div>
                     <div className="ml-4 flex-1">
                       <h3 className="text-lg font-medium text-gray-900">{sitter.name}</h3>
-                      <p className="text-sm text-gray-500">{sitter.email}</p>
+                      
+                      {/* Rating and review count */}
+                      <div className="flex items-center mt-1">
+                        <div className="flex text-sm">
+                          {renderStarRating(sitter.reviews.averageRating)}
+                        </div>
+                        <span className="ml-1 text-sm text-gray-500">
+                          ({sitter.reviews.count} {sitter.reviews.count === 1 ? 'review' : 'reviews'})
+                        </span>
+                      </div>
+                      
+                      {/* Location from profile */}
+                      {sitter.profile && (
+                        <p className="text-sm text-gray-500 mt-1">
+                          {sitter.profile.location}
+                        </p>
+                      )}
+                      
+                      {/* Hourly rate if available */}
+                      {sitter.profile && (
+                        <p className="text-sm font-medium text-gray-700 mt-1">
+                          ${sitter.profile.hourlyRate}/hr
+                        </p>
+                      )}
                     </div>
                   </div>
-                  <div className="mt-4 flex justify-between">
+                  <div className="mt-4 flex justify-end">
                     <button
                       onClick={() => handleSitterSelect(sitter)}
-                      className="text-blue-600 hover:text-blue-800 text-sm font-medium"
-                    >
-                      View Details
-                    </button>
-                    <button
-                      onClick={() => handleBookNow(sitter)}
                       className="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"
                     >
-                      Book Now
+                      View Details
                     </button>
                   </div>
                 </div>
@@ -340,7 +429,19 @@ const SittersList = () => {
                 </div>
                 <div className="ml-4">
                   <h3 className="text-xl font-medium text-gray-900">{selectedSitter.name}</h3>
-                  <p className="text-gray-500">{selectedSitter.email}</p>
+                  
+                  {/* Rating display */}
+                  <div className="flex items-center mt-1">
+                    <div className="flex text-sm">
+                      {renderStarRating(selectedSitter.reviews.averageRating)}
+                    </div>
+                    <Link 
+                      to={`/sitter-reviews/${selectedSitter.id}`}
+                      className="ml-1 text-sm text-blue-600 hover:text-blue-800"
+                    >
+                      ({selectedSitter.reviews.count} {selectedSitter.reviews.count === 1 ? 'review' : 'reviews'})
+                    </Link>
+                  </div>
                 </div>
               </div>
 
@@ -391,7 +492,7 @@ const SittersList = () => {
         </div>
       </div>
 
-      {/* Booking Modal */}
+      {/* Booking Modal - with optional notes */}
       {showBookingModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 overflow-hidden">
@@ -401,7 +502,7 @@ const SittersList = () => {
             <form onSubmit={handleBookingSubmit} className="p-6">
               <div className="mb-4">
                 <label htmlFor="petId" className="block text-sm font-medium text-gray-700 mb-1">
-                  Select Pet
+                  Select Pet*
                 </label>
                 <select
                   id="petId"
@@ -420,7 +521,7 @@ const SittersList = () => {
 
               <div className="mb-4">
                 <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-1">
-                  Start Date & Time
+                  Start Date & Time*
                 </label>
                 <input
                   type="datetime-local"
@@ -435,7 +536,7 @@ const SittersList = () => {
 
               <div className="mb-4">
                 <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 mb-1">
-                  End Date & Time
+                  End Date & Time*
                 </label>
                 <input
                   type="datetime-local"
@@ -450,17 +551,16 @@ const SittersList = () => {
 
               <div className="mb-6">
                 <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-1">
-                  Notes for Sitter
+                  Notes for Sitter (Optional)
                 </label>
                 <textarea
                   id="notes"
                   name="notes"
                   value={bookingData.notes}
                   onChange={handleBookingInputChange}
-                  required
                   rows={3}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Describe your pet's needs, special instructions, etc."
+                  placeholder="Describe your pet's needs, special instructions, etc. (optional)"
                 ></textarea>
               </div>
 

@@ -91,9 +91,8 @@ const BookingForm = ({ booking, userRole, onSubmit, onCancel }) => {
       newErrors.endDate = 'End date must be after start date';
     }
     
-    if (!formData.notes.trim()) {
-      newErrors.notes = 'Notes are required';
-    } else if (formData.notes.length > 1000) {
+    // Notes are now optional - we only validate length if provided
+    if (formData.notes && formData.notes.length > 1000) {
       newErrors.notes = 'Notes must be less than 1000 characters';
     }
     
@@ -190,11 +189,11 @@ const BookingForm = ({ booking, userRole, onSubmit, onCancel }) => {
         </>
       )}
       
-      {/* Notes Field */}
+      {/* Notes Field - Now Optional */}
       {(!booking || (booking && userRole === 'Client')) && (
         <div className="mb-4">
           <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-1">
-            Notes for Sitter
+            Notes for Sitter (Optional)
           </label>
           <textarea
             id="notes"
@@ -205,7 +204,7 @@ const BookingForm = ({ booking, userRole, onSubmit, onCancel }) => {
             className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1 ${
               errors.notes ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
             }`}
-            placeholder="Describe any special requirements, pet needs, etc."
+            placeholder="Describe any special requirements, pet needs, etc. (optional)"
           ></textarea>
           {errors.notes && <p className="mt-1 text-sm text-red-500">{errors.notes}</p>}
         </div>

@@ -7,7 +7,7 @@ import BookingForm from '../../components/BookingForm';
 import BookingCalendar from '../../components/BookingCalendar';
 import BookingDetailModal from '../../components/ui/BookingDetailModal';
 
-const BookingsTable = () => {
+const SitterBookingsView = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -15,15 +15,10 @@ const BookingsTable = () => {
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [isDeleteModal, setIsDeleteModal] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
-  const [userRole, setUserRole] = useState(null);
-  const [viewMode, setViewMode] = useState('list'); // 'list' or 'calendar'
+  const [viewMode, setViewMode] = useState('calendar'); // Default to calendar for sitters
   const navigate = useNavigate();
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (user) {
-      setUserRole(user.role);
-    }
     fetchBookings();
   }, []);
 
@@ -74,11 +69,6 @@ const BookingsTable = () => {
       default:
         return 'bg-gray-100 text-gray-800';
     }
-  };
-
-  // For client role, redirect to "Find Sitters" page
-  const handleAdd = () => {
-    navigate('/sitters');
   };
 
   const handleEdit = (booking) => {
@@ -146,6 +136,10 @@ const BookingsTable = () => {
       header: 'Pet',
     },
     {
+      key: 'clientName',
+      header: 'Client',
+    },
+    {
       key: 'startDate',
       header: 'Start Date',
       render: (booking) => formatDate(booking.startDate)
@@ -163,13 +157,6 @@ const BookingsTable = () => {
           {booking.status}
         </span>
       )
-    },
-    userRole === 'Client' ? {
-      key: 'sitterName',
-      header: 'Sitter',
-    } : {
-      key: 'clientName',
-      header: 'Client',
     }
   ];
 
@@ -192,7 +179,7 @@ const BookingsTable = () => {
       )}
       
       {/* View toggle */}
-      <div className="mb-6 flex justify-between items-center">
+      <div className="mb-6">
         <div className="inline-flex rounded-md shadow-sm" role="group">
           <button
             type="button"
@@ -217,15 +204,6 @@ const BookingsTable = () => {
             Calendar View
           </button>
         </div>
-        
-        {userRole === 'Client' && (
-          <button
-            onClick={handleAdd}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-          >
-            Book New Sitter
-          </button>
-        )}
       </div>
       
       {/* View content */}
@@ -250,11 +228,11 @@ const BookingsTable = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
           <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full mx-4">
             <h2 className="text-xl font-semibold mb-4">
-              Edit Booking
+              Update Booking Status
             </h2>
             <BookingForm
               booking={selectedBooking}
-              userRole={userRole}
+              userRole="Sitter"
               onSubmit={handleFormSubmit}
               onCancel={() => setShowModal(false)}
             />
@@ -275,7 +253,7 @@ const BookingsTable = () => {
       {showDetailModal && selectedBooking && (
         <BookingDetailModal
           booking={selectedBooking}
-          userRole={userRole}
+          userRole="Sitter"
           onClose={() => setShowDetailModal(false)}
           onEdit={handleEdit}
           onDelete={handleDelete}
@@ -285,4 +263,4 @@ const BookingsTable = () => {
   );
 };
 
-export default BookingsTable;
+export default SitterBookingsView;
