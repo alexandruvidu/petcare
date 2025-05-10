@@ -1,1 +1,1 @@
-export { ContentCard } from "./ContentCard";
+export { ContentCard } from "./ContentCard"

@@ -1,1 +1,1 @@
-export * from "./UserFileTable";
+export * from "./UserFileTable"

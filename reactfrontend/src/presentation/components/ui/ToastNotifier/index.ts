@@ -1,1 +1,1 @@
-export * from "./ToastNotifier";
+export * from "./ToastNotifier"

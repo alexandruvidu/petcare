@@ -2,4 +2,4 @@ export {
   LanguageContextProvider,
   useLanguageAPI,
   useLanguageState,
-} from "./LanguageContextProvider";
+} from "./LanguageContextProvider"

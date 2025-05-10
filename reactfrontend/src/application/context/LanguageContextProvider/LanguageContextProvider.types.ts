@@ -1,14 +1,12 @@
-import { SupportedLanguage } from "presentation/assets/lang";
+import type { SupportedLanguage } from "presentation/assets/lang"
 
 export type LanguageState = {
-  selectedLanguage: SupportedLanguage;
-};
+  selectedLanguage: SupportedLanguage
+}
 
 export type LanguageAPI = {
-  setRomanian: () => void;
-  setEnglish: () => void;
-};
+  setRomanian: () => void
+  setEnglish: () => void
+}
 
-export type LanguageContextActions =
-  | { type: "setRomanianLanguage" }
-  | { type: "setEnglishLanguage" };
+export type LanguageContextActions = { type: "setRomanianLanguage" } | { type: "setEnglishLanguage" }
