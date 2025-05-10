@@ -15,17 +15,20 @@
 
 import * as runtime from '../runtime';
 import type {
-  RequestResponse,
+  StringRequestResponse,
   UserAddDTO,
+  UserDTOListRequestResponse,
   UserDTOPagedResponseRequestResponse,
   UserDTORequestResponse,
   UserUpdateDTO,
 } from '../models/index';
 import {
-    RequestResponseFromJSON,
-    RequestResponseToJSON,
+    StringRequestResponseFromJSON,
+    StringRequestResponseToJSON,
     UserAddDTOFromJSON,
     UserAddDTOToJSON,
+    UserDTOListRequestResponseFromJSON,
+    UserDTOListRequestResponseToJSON,
     UserDTOPagedResponseRequestResponseFromJSON,
     UserDTOPagedResponseRequestResponseToJSON,
     UserDTORequestResponseFromJSON,
@@ -63,7 +66,7 @@ export class UserApi extends runtime.BaseAPI {
 
     /**
      */
-    async apiUserAddPostRaw(requestParameters: ApiUserAddPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<RequestResponse>> {
+    async apiUserAddPostRaw(requestParameters: ApiUserAddPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<StringRequestResponse>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -86,19 +89,19 @@ export class UserApi extends runtime.BaseAPI {
             body: UserAddDTOToJSON(requestParameters['userAddDTO']),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => RequestResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => StringRequestResponseFromJSON(jsonValue));
     }
 
     /**
      */
-    async apiUserAddPost(requestParameters: ApiUserAddPostRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RequestResponse> {
+    async apiUserAddPost(requestParameters: ApiUserAddPostRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<StringRequestResponse> {
         const response = await this.apiUserAddPostRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
      */
-    async apiUserDeleteIdDeleteRaw(requestParameters: ApiUserDeleteIdDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<RequestResponse>> {
+    async apiUserDeleteIdDeleteRaw(requestParameters: ApiUserDeleteIdDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<StringRequestResponse>> {
         if (requestParameters['id'] == null) {
             throw new runtime.RequiredError(
                 'id',
@@ -125,13 +128,77 @@ export class UserApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => RequestResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => StringRequestResponseFromJSON(jsonValue));
     }
 
     /**
      */
-    async apiUserDeleteIdDelete(requestParameters: ApiUserDeleteIdDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RequestResponse> {
+    async apiUserDeleteIdDelete(requestParameters: ApiUserDeleteIdDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<StringRequestResponse> {
         const response = await this.apiUserDeleteIdDeleteRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async apiUserDeleteSelfDeleteRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<StringRequestResponse>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("Bearer", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/User/DeleteSelf`,
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => StringRequestResponseFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async apiUserDeleteSelfDelete(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<StringRequestResponse> {
+        const response = await this.apiUserDeleteSelfDeleteRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async apiUserGetAllSittersGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UserDTOListRequestResponse>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("Bearer", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/User/GetAllSitters`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => UserDTOListRequestResponseFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async apiUserGetAllSittersGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UserDTOListRequestResponse> {
+        const response = await this.apiUserGetAllSittersGetRaw(initOverrides);
         return await response.value();
     }
 
@@ -171,6 +238,38 @@ export class UserApi extends runtime.BaseAPI {
      */
     async apiUserGetByIdIdGet(requestParameters: ApiUserGetByIdIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UserDTORequestResponse> {
         const response = await this.apiUserGetByIdIdGetRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async apiUserGetMeGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UserDTORequestResponse>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        if (this.configuration && this.configuration.accessToken) {
+            const token = this.configuration.accessToken;
+            const tokenString = await token("Bearer", []);
+
+            if (tokenString) {
+                headerParameters["Authorization"] = `Bearer ${tokenString}`;
+            }
+        }
+        const response = await this.request({
+            path: `/api/User/GetMe`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => UserDTORequestResponseFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async apiUserGetMeGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UserDTORequestResponse> {
+        const response = await this.apiUserGetMeGetRaw(initOverrides);
         return await response.value();
     }
 
@@ -220,7 +319,7 @@ export class UserApi extends runtime.BaseAPI {
 
     /**
      */
-    async apiUserUpdatePutRaw(requestParameters: ApiUserUpdatePutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<RequestResponse>> {
+    async apiUserUpdatePutRaw(requestParameters: ApiUserUpdatePutRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<StringRequestResponse>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -243,12 +342,12 @@ export class UserApi extends runtime.BaseAPI {
             body: UserUpdateDTOToJSON(requestParameters['userUpdateDTO']),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => RequestResponseFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => StringRequestResponseFromJSON(jsonValue));
     }
 
     /**
      */
-    async apiUserUpdatePut(requestParameters: ApiUserUpdatePutRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<RequestResponse> {
+    async apiUserUpdatePut(requestParameters: ApiUserUpdatePutRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<StringRequestResponse> {
         const response = await this.apiUserUpdatePutRaw(requestParameters, initOverrides);
         return await response.value();
     }

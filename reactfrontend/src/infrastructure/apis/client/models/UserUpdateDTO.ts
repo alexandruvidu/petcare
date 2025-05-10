@@ -24,26 +24,31 @@ export interface UserUpdateDTO {
      * @type {string}
      * @memberof UserUpdateDTO
      */
-    id: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof UserUpdateDTO
-     */
     name?: string | null;
     /**
      * 
      * @type {string}
      * @memberof UserUpdateDTO
      */
+    email?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof UserUpdateDTO
+     */
     password?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof UserUpdateDTO
+     */
+    phone?: string | null;
 }
 
 /**
  * Check if a given object implements the UserUpdateDTO interface.
  */
 export function instanceOfUserUpdateDTO(value: object): value is UserUpdateDTO {
-    if (!('id' in value) || value['id'] === undefined) return false;
     return true;
 }
 
@@ -57,9 +62,10 @@ export function UserUpdateDTOFromJSONTyped(json: any, ignoreDiscriminator: boole
     }
     return {
         
-        'id': json['id'],
         'name': json['name'] == null ? undefined : json['name'],
+        'email': json['email'] == null ? undefined : json['email'],
         'password': json['password'] == null ? undefined : json['password'],
+        'phone': json['phone'] == null ? undefined : json['phone'],
     };
 }
 
@@ -74,9 +80,10 @@ export function UserUpdateDTOToJSONTyped(value?: UserUpdateDTO | null, ignoreDis
 
     return {
         
-        'id': value['id'],
         'name': value['name'],
+        'email': value['email'],
         'password': value['password'],
+        'phone': value['phone'],
     };
 }
 

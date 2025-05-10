@@ -21,12 +21,12 @@ export const ErrorCodes = {
     Unknown: 'Unknown',
     TechnicalError: 'TechnicalError',
     EntityNotFound: 'EntityNotFound',
-    PhysicalFileNotFound: 'PhysicalFileNotFound',
-    UserAlreadyExists: 'UserAlreadyExists',
+    AlreadyExists: 'AlreadyExists',
     WrongPassword: 'WrongPassword',
-    CannotAdd: 'CannotAdd',
     CannotUpdate: 'CannotUpdate',
     CannotDelete: 'CannotDelete',
+    Unauthorized: 'Unauthorized',
+    InvalidData: 'InvalidData',
     MailSendFailed: 'MailSendFailed'
 } as const;
 export type ErrorCodes = typeof ErrorCodes[keyof typeof ErrorCodes];

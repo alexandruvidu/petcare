@@ -24,37 +24,37 @@ import {
 /**
  * 
  * @export
- * @interface UserAddDTO
+ * @interface RegisterDTO
  */
-export interface UserAddDTO {
+export interface RegisterDTO {
     /**
      * 
      * @type {string}
-     * @memberof UserAddDTO
+     * @memberof RegisterDTO
      */
     name: string;
     /**
      * 
      * @type {string}
-     * @memberof UserAddDTO
+     * @memberof RegisterDTO
      */
     email: string;
     /**
      * 
      * @type {string}
-     * @memberof UserAddDTO
+     * @memberof RegisterDTO
      */
     password: string;
     /**
      * 
      * @type {string}
-     * @memberof UserAddDTO
+     * @memberof RegisterDTO
      */
     phone: string;
     /**
      * 
      * @type {UserRoleEnum}
-     * @memberof UserAddDTO
+     * @memberof RegisterDTO
      */
     role: UserRoleEnum;
 }
@@ -62,9 +62,9 @@ export interface UserAddDTO {
 
 
 /**
- * Check if a given object implements the UserAddDTO interface.
+ * Check if a given object implements the RegisterDTO interface.
  */
-export function instanceOfUserAddDTO(value: object): value is UserAddDTO {
+export function instanceOfRegisterDTO(value: object): value is RegisterDTO {
     if (!('name' in value) || value['name'] === undefined) return false;
     if (!('email' in value) || value['email'] === undefined) return false;
     if (!('password' in value) || value['password'] === undefined) return false;
@@ -73,11 +73,11 @@ export function instanceOfUserAddDTO(value: object): value is UserAddDTO {
     return true;
 }
 
-export function UserAddDTOFromJSON(json: any): UserAddDTO {
-    return UserAddDTOFromJSONTyped(json, false);
+export function RegisterDTOFromJSON(json: any): RegisterDTO {
+    return RegisterDTOFromJSONTyped(json, false);
 }
 
-export function UserAddDTOFromJSONTyped(json: any, ignoreDiscriminator: boolean): UserAddDTO {
+export function RegisterDTOFromJSONTyped(json: any, ignoreDiscriminator: boolean): RegisterDTO {
     if (json == null) {
         return json;
     }
@@ -91,11 +91,11 @@ export function UserAddDTOFromJSONTyped(json: any, ignoreDiscriminator: boolean)
     };
 }
 
-export function UserAddDTOToJSON(json: any): UserAddDTO {
-    return UserAddDTOToJSONTyped(json, false);
+export function RegisterDTOToJSON(json: any): RegisterDTO {
+    return RegisterDTOToJSONTyped(json, false);
 }
 
-export function UserAddDTOToJSONTyped(value?: UserAddDTO | null, ignoreDiscriminator: boolean = false): any {
+export function RegisterDTOToJSONTyped(value?: RegisterDTO | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }

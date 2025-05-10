@@ -47,6 +47,12 @@ export interface UserDTO {
     email: string;
     /**
      * 
+     * @type {string}
+     * @memberof UserDTO
+     */
+    phone: string;
+    /**
+     * 
      * @type {UserRoleEnum}
      * @memberof UserDTO
      */
@@ -62,6 +68,7 @@ export function instanceOfUserDTO(value: object): value is UserDTO {
     if (!('id' in value) || value['id'] === undefined) return false;
     if (!('name' in value) || value['name'] === undefined) return false;
     if (!('email' in value) || value['email'] === undefined) return false;
+    if (!('phone' in value) || value['phone'] === undefined) return false;
     if (!('role' in value) || value['role'] === undefined) return false;
     return true;
 }
@@ -79,6 +86,7 @@ export function UserDTOFromJSONTyped(json: any, ignoreDiscriminator: boolean): U
         'id': json['id'],
         'name': json['name'],
         'email': json['email'],
+        'phone': json['phone'],
         'role': UserRoleEnumFromJSON(json['role']),
     };
 }
@@ -97,6 +105,7 @@ export function UserDTOToJSONTyped(value?: UserDTO | null, ignoreDiscriminator: 
         'id': value['id'],
         'name': value['name'],
         'email': value['email'],
+        'phone': value['phone'],
         'role': UserRoleEnumToJSON(value['role']),
     };
 }
