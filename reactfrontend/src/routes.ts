@@ -3,7 +3,22 @@
  */
 export enum AppRoute {
     Index = "/",
+    About = "/about",
     Login = "/login",
-    Users = "/users",
-    UserFiles = "/user-files"
+    Register = "/register",
+
+    // Client Routes
+    ClientDashboard = "/client/dashboard",
+    ClientPets = "/client/pets",
+    ClientBookings = "/client/bookings",
+    Sitters = "/sitters",
+
+    // Sitter Routes
+    SitterDashboard = "/sitter/dashboard",
+    SitterBookings = "/sitter/bookings",
+    SitterReviews = "/sitter/reviews",
+
+    // Common Routes
+    Profile = "/profile",
+    PublicSitterReviews = "/sitter-reviews/:sitterId"
 }

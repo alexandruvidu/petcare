@@ -1,31 +1,366 @@
-import { WebsiteLayout } from "presentation/layouts/WebsiteLayout";
-import { Typography } from "@mui/material";
-import { Fragment, memo } from "react";
-import { useIntl } from "react-intl";
-import { Seo } from "@presentation/components/ui/Seo";
-import { ContentCard } from "@presentation/components/ui/ContentCard";
+import React from 'react';
+import {
+  Box,
+  Typography,
+  Button,
+  Container,
+  Grid,
+  Card,
+  CardContent,
+  CardActions,
+  useTheme,
+  useMediaQuery
+} from '@mui/material';
+import { Link } from 'react-router-dom';
+import { WebsiteLayout } from '@presentation/layouts/WebsiteLayout';
+import { useIntl } from 'react-intl';
+import { AppRoute } from 'routes';
+import PetsIcon from '@mui/icons-material/Pets';
+import HomeIcon from '@mui/icons-material/Home';
+import DirectionsRunIcon from '@mui/icons-material/DirectionsRun';
+import { Seo } from '@presentation/components/ui/Seo';
 
-export const HomePage = memo(() => {
+export const HomePage = () => {
   const { formatMessage } = useIntl();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
-  return <Fragment>
-      <Seo title="MobyLab Web App | Home" />
-      <WebsiteLayout>
-        <div className="pl-[50px] pr-[50px]">
-          <ContentCard title={formatMessage({ id: "globals.welcome" })}>
-            <Typography>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut tristique et egestas quis ipsum suspendisse. At volutpat diam ut venenatis tellus in metus vulputate eu. Diam maecenas ultricies mi eget mauris. Diam sollicitudin tempor id eu nisl nunc mi. Sagittis aliquam malesuada bibendum arcu vitae elementum curabitur vitae nunc. Sapien nec sagittis aliquam malesuada bibendum arcu vitae. Tortor id aliquet lectus proin nibh nisl. Et malesuada fames ac turpis egestas maecenas pharetra convallis posuere. Volutpat blandit aliquam etiam erat velit scelerisque in. Feugiat in fermentum posuere urna nec. Morbi tristique senectus et netus et. Faucibus purus in massa tempor nec feugiat nisl. Sit amet mauris commodo quis imperdiet massa tincidunt. Mauris rhoncus aenean vel elit scelerisque. Urna porttitor rhoncus dolor purus non enim praesent elementum. Massa enim nec dui nunc mattis enim ut tellus. Id eu nisl nunc mi ipsum faucibus vitae aliquet. Ac auctor augue mauris augue neque gravida in. Sollicitudin ac orci phasellus egestas.
+  return (
+      <>
+        <Seo title="PetCare | Home" />
+        <WebsiteLayout>
+          {/* Hero Section */}
+          <Box
+              sx={{
+                position: 'relative',
+                height: { xs: '60vh', md: '70vh' },
+                display: 'flex',
+                alignItems: 'center',
+                color: 'white',
+                mb: 8,
+                overflowX: 'hidden',
+                borderRadius: 2,
+                boxShadow: 3
+              }}
+          >
+            <Box
+                sx={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  zIndex: -2,
+                  '&::before': {
+                    content: '""',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    backgroundColor: 'rgba(0, 50, 150, 0.7)',
+                    zIndex: -1
+                  },
+                  '& img': {
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover'
+                  }
+                }}
+            >
+              <img
+                  src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80"
+                  alt="Dog and person playing"
+              />
+            </Box>
 
-              Elementum sagittis vitae et leo duis ut diam quam nulla. Elementum nisi quis eleifend quam adipiscing vitae. Ultrices vitae auctor eu augue ut lectus arcu bibendum. Senectus et netus et malesuada. Pharetra sit amet aliquam id. Elit scelerisque mauris pellentesque pulvinar pellentesque habitant morbi tristique senectus. Vitae congue eu consequat ac felis donec et odio pellentesque. Adipiscing elit pellentesque habitant morbi. Duis ultricies lacus sed turpis tincidunt id aliquet risus. Leo vel fringilla est ullamcorper eget.
+            <Container>
+              <Grid container spacing={4}>
+                <Grid item xs={12} md={8} lg={6}>
+                  <Typography
+                      component="h1"
+                      variant={isMobile ? "h3" : "h2"}
+                      color="inherit"
+                      gutterBottom
+                      fontWeight="bold"
+                  >
+                    Caring for your pets when you can't
+                  </Typography>
+                  <Typography
+                      variant="h6"
+                      color="inherit"
+                      paragraph
+                      sx={{ mb: 4, opacity: 0.9 }}
+                  >
+                    PetCare connects pet owners with trusted pet sitters in your area.
+                    Whether it's a day, a weekend, or longer - your pets will receive the care they deserve.
+                  </Typography>
+                  <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                    <Button
+                        component={Link}
+                        to={AppRoute.Register}
+                        variant="contained"
+                        size="large"
+                        sx={{
+                          bgcolor: 'white',
+                          color: 'primary.main',
+                          '&:hover': {
+                            bgcolor: 'grey.100'
+                          }
+                        }}
+                    >
+                      Get Started
+                    </Button>
+                    <Button
+                        component={Link}
+                        to={AppRoute.About}
+                        variant="outlined"
+                        size="large"
+                        sx={{
+                          color: 'white',
+                          borderColor: 'white',
+                          '&:hover': {
+                            borderColor: 'white',
+                            bgcolor: 'rgba(255, 255, 255, 0.1)'
+                          }
+                        }}
+                    >
+                      Learn More
+                    </Button>
+                  </Box>
+                </Grid>
+              </Grid>
+            </Container>
+          </Box>
 
-              Lacus sed viverra tellus in hac. Eu sem integer vitae justo eget magna fermentum iaculis. Consequat id porta nibh venenatis cras sed. Sed elementum tempus egestas sed. Tincidunt dui ut ornare lectus sit amet. Facilisi morbi tempus iaculis urna id volutpat lacus laoreet. Duis at consectetur lorem donec massa sapien. Diam vulputate ut pharetra sit amet aliquam id. Senectus et netus et malesuada fames ac. Ultrices eros in cursus turpis massa. Commodo odio aenean sed adipiscing diam. Aliquet bibendum enim facilisis gravida neque convallis. Feugiat vivamus at augue eget. Augue lacus viverra vitae congue eu consequat ac felis donec. Magna eget est lorem ipsum dolor.
+          {/* Features Section */}
+          <Box sx={{ py: 8, bgcolor: 'grey.50', borderRadius: 2, mb: 8 }}>
+            <Container>
+              <Box sx={{ textAlign: 'center', mb: 6 }}>
+                <Typography
+                    component="span"
+                    variant="overline"
+                    color="primary.main"
+                    fontWeight="bold"
+                >
+                  Our Services
+                </Typography>
+                <Typography
+                    component="h2"
+                    variant="h3"
+                    fontWeight="bold"
+                    sx={{ mt: 1, mb: 2 }}
+                >
+                  Everything your pet needs
+                </Typography>
+                <Typography
+                    variant="h6"
+                    color="text.secondary"
+                    sx={{ maxWidth: 'md', mx: 'auto' }}
+                >
+                  From walks and feeding to overnight stays, our sitters provide the best care for your furry friends.
+                </Typography>
+              </Box>
 
-              In pellentesque massa placerat duis. Facilisis gravida neque convallis a cras semper auctor neque. Nisi lacus sed viverra tellus. Integer vitae justo eget magna fermentum iaculis eu non. Dictum sit amet justo donec enim diam vulputate ut. Semper feugiat nibh sed pulvinar proin gravida hendrerit lectus a. Tortor posuere ac ut consequat semper viverra nam libero justo. Dictum at tempor commodo ullamcorper a. Sit amet commodo nulla facilisi nullam vehicula ipsum a arcu. Luctus venenatis lectus magna fringilla. Posuere sollicitudin aliquam ultrices sagittis orci. Tortor posuere ac ut consequat semper viverra nam libero. Massa ultricies mi quis hendrerit dolor magna. Ac tincidunt vitae semper quis lectus nulla. Pretium fusce id velit ut tortor pretium viverra. Enim ut tellus elementum sagittis. Viverra tellus in hac habitasse platea dictumst vestibulum rhoncus est. Sed turpis tincidunt id aliquet risus. In vitae turpis massa sed. Sit amet risus nullam eget felis.
+              <Grid container spacing={4}>
+                {/* Feature 1 */}
+                <Grid item xs={12} sm={6} md={4}>
+                  <Card
+                      sx={{
+                        height: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        borderRadius: 3,
+                        boxShadow: 2,
+                        border: '1px solid',
+                        borderColor: 'grey.200'
+                      }}
+                  >
+                    <Box
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'center',
+                          pt: 3
+                        }}
+                    >
+                      <Box
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            bgcolor: 'primary.main',
+                            color: 'white',
+                            width: 60,
+                            height: 60,
+                            borderRadius: 2,
+                            boxShadow: 2
+                          }}
+                      >
+                        <PetsIcon fontSize="large" />
+                      </Box>
+                    </Box>
+                    <CardContent sx={{ flexGrow: 1, pt: 4 }}>
+                      <Typography gutterBottom variant="h5" component="h3" textAlign="center">
+                        Pet Sitting
+                      </Typography>
+                      <Typography>
+                        Our pet sitters can visit your home to feed, play with, and care for your pets while you're away.
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
 
-              Aliquet porttitor lacus luctus accumsan tortor posuere ac ut consequat. Non curabitur gravida arcu ac tortor dignissim convallis. Ac placerat vestibulum lectus mauris ultrices eros. Ullamcorper sit amet risus nullam eget felis. Quam lacus suspendisse faucibus interdum posuere. Viverra orci sagittis eu volutpat odio facilisis mauris sit. Sit amet nisl suscipit adipiscing bibendum. Nullam vehicula ipsum a arcu cursus vitae congue mauris rhoncus. Est velit egestas dui id ornare arcu. Gravida cum sociis natoque penatibus et magnis. Massa tincidunt dui ut ornare lectus sit amet est. Nec nam aliquam sem et tortor. Suspendisse ultrices gravida dictum fusce. Ac turpis egestas sed tempus urna et. Scelerisque in dictum non consectetur a erat. Curabitur vitae nunc sed velit. Sit amet commodo nulla facilisi nullam vehicula. Blandit volutpat maecenas volutpat blandit aliquam. Eu tincidunt tortor aliquam nulla facilisi cras fermentum odio eu.
+                {/* Feature 2 */}
+                <Grid item xs={12} sm={6} md={4}>
+                  <Card
+                      sx={{
+                        height: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        borderRadius: 3,
+                        boxShadow: 2,
+                        border: '1px solid',
+                        borderColor: 'grey.200'
+                      }}
+                  >
+                    <Box
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'center',
+                          pt: 3
+                        }}
+                    >
+                      <Box
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            bgcolor: 'primary.main',
+                            color: 'white',
+                            width: 60,
+                            height: 60,
+                            borderRadius: 2,
+                            boxShadow: 2
+                          }}
+                      >
+                        <HomeIcon fontSize="large" />
+                      </Box>
+                    </Box>
+                    <CardContent sx={{ flexGrow: 1, pt: 4 }}>
+                      <Typography gutterBottom variant="h5" component="h3" textAlign="center">
+                        Boarding
+                      </Typography>
+                      <Typography>
+                        Your pet can stay at a sitter's home, receiving 24/7 attention and care in a safe environment.
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
 
-            </Typography>
-          </ContentCard>
-        </div>
-      </WebsiteLayout>
-    </Fragment>
-});
+                {/* Feature 3 */}
+                <Grid item xs={12} sm={6} md={4}>
+                  <Card
+                      sx={{
+                        height: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        borderRadius: 3,
+                        boxShadow: 2,
+                        border: '1px solid',
+                        borderColor: 'grey.200'
+                      }}
+                  >
+                    <Box
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'center',
+                          pt: 3
+                        }}
+                    >
+                      <Box
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            bgcolor: 'primary.main',
+                            color: 'white',
+                            width: 60,
+                            height: 60,
+                            borderRadius: 2,
+                            boxShadow: 2
+                          }}
+                      >
+                        <DirectionsRunIcon fontSize="large" />
+                      </Box>
+                    </Box>
+                    <CardContent sx={{ flexGrow: 1, pt: 4 }}>
+                      <Typography gutterBottom variant="h5" component="h3" textAlign="center">
+                        Dog Walking
+                      </Typography>
+                      <Typography>
+                        Regular walks keep your dog happy and healthy, providing exercise and mental stimulation.
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              </Grid>
+            </Container>
+          </Box>
+
+          {/* CTA Section */}
+          <Box
+              sx={{
+                bgcolor: 'primary.main',
+                color: 'white',
+                py: 8,
+                borderRadius: 2,
+                mb: 6,
+                boxShadow: 3
+              }}
+          >
+            <Container maxWidth="lg">
+              <Grid container justifyContent="center" textAlign="center">
+                <Grid item xs={12} md={8}>
+                  <Typography
+                      variant={isMobile ? "h4" : "h3"}
+                      component="h2"
+                      fontWeight="bold"
+                      gutterBottom
+                  >
+                    Ready to find the perfect pet sitter?
+                  </Typography>
+                  <Typography
+                      variant="h6"
+                      sx={{
+                        mb: 4,
+                        opacity: 0.9,
+                        maxWidth: 'md',
+                        mx: 'auto'
+                      }}
+                  >
+                    Join thousands of satisfied pet owners who trust PetCare with their furry, feathered, and scaly friends.
+                  </Typography>
+                  <Button
+                      component={Link}
+                      to={AppRoute.Register}
+                      variant="contained"
+                      size="large"
+                      sx={{
+                        bgcolor: 'white',
+                        color: 'primary.main',
+                        px: 4,
+                        '&:hover': {
+                          bgcolor: 'grey.100'
+                        }
+                      }}
+                  >
+                    Sign up for free
+                  </Button>
+                </Grid>
+              </Grid>
+            </Container>
+          </Box>
+        </WebsiteLayout>
+      </>
+  );
+};
