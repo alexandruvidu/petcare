@@ -4,7 +4,6 @@ import { AppIntlProvider } from "@presentation/components/ui/AppIntlProvider";
 import { ToastNotifier } from "@presentation/components/ui/ToastNotifier";
 import { HomePage } from "@presentation/pages/HomePage";
 import { LoginPage } from "@presentation/pages/LoginPage";
-import { UserFilesPage } from "@presentation/pages/UserFilesPage";
 import { UsersPage } from "@presentation/pages/UsersPage";
 import { Route, Routes } from "react-router-dom";
 import { AppRoute } from "routes";
