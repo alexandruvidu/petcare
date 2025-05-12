@@ -4,7 +4,7 @@ import { AppIntlProvider } from "@presentation/components/ui/AppIntlProvider";
 import { ToastNotifier } from "@presentation/components/ui/ToastNotifier";
 import { HomePage } from "@presentation/pages/HomePage";
 import { LoginPage } from "@presentation/pages/LoginPage";
-import { RegisterPage } from "@presentation/pages/RegisterPage"; // Corrected path assuming RegisterPage.tsx exists
+import { RegisterPage } from "@presentation/pages/RegisterPage";
 import { AboutPage } from "@presentation/pages/AboutPage";
 import { Route, Routes, Navigate } from "react-router-dom";
 import { AppRoute } from "routes";
@@ -19,11 +19,11 @@ import { SittersList } from "@presentation/pages/client/SittersList";
 import { SitterDashboard } from "@presentation/pages/sitter/SitterDashboard";
 import { SitterBookingsView } from "@presentation/pages/sitter/SitterBookingsView";
 import { SitterReviews } from "@presentation/pages/sitter/SitterReviews";
-import { PublicSitterReviews } from "@presentation/pages/sitter/PublicSitterReviews"; // Corrected path
+import { PublicSitterReviews } from "@presentation/pages/sitter/PublicSitterReviews";
 
 // Common Pages
 import { ProfilePage } from "@presentation/pages/profile/ProfilePage";
-import { SitterProfilePage } from "@presentation/pages/profile/SitterProfilePage"; // Ensure this component is exported
+import { SitterProfilePage } from "@presentation/pages/profile/SitterProfilePage"; // This now handles tabs
 import { UsersPage } from "@presentation/pages/UsersPage";
 
 // Protected Route Component
@@ -131,9 +131,9 @@ export function App() {
                 <Route
                     path={AppRoute.Profile}
                     element={
-                        <ProtectedRoute allowedRoles={[UserRoleEnum.Client, UserRoleEnum.Sitter]}>
-                            {userRole === UserRoleEnum.Sitter ? <SitterProfilePage /> :
-                                userRole === UserRoleEnum.Client ? <ProfilePage /> :
+                        <ProtectedRoute allowedRoles={[UserRoleEnum.Client, UserRoleEnum.Sitter, UserRoleEnum.Admin]}> {/* Added Admin */}
+                            {userRole === UserRoleEnum.Sitter ? <SitterProfilePage /> : /* Use the updated SitterProfilePage */
+                                (userRole === UserRoleEnum.Client || userRole === UserRoleEnum.Admin) ? <ProfilePage /> :
                                     <Navigate to={AppRoute.Index} replace />}
                         </ProtectedRoute>
                     }

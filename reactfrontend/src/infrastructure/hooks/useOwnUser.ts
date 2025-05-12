@@ -1,30 +1,27 @@
-import { useAppSelector } from "@application/store"
-import {useGetUser} from "@infrastructure/apis/api-management";
+import { useAppSelector } from "@application/store";
 import { UserRoleEnum } from "@infrastructure/apis/client";
-import { isUndefined } from "lodash";
 
 /**
- * You can use this hook to retrieve the own user from the backend.
- * You can create new hooks by using and combining other hooks.
+ * Retrieves the current user's basic information from the Redux profile state.
  */
 export const useOwnUser = () => {
-    const { userId } = useAppSelector(x => x.profileReducer); // Get the own user id from the redux storage.
-    const { data } = useGetUser(userId); // Get the client for the API.
-    return data?.response;
-}
+    const profile = useAppSelector(x => x.profileReducer);
+    return {
+        id: profile.userId,
+        name: profile.name,
+        email: profile.email, // Added email for completeness
+        role: profile.role   // Role is now directly from Redux state
+    };
+};
 
 /**
- * This hook returns if the current user has the given role.
+ * Checks if the current user has a specific role.
+ * Relies on the 'role' field in the Redux profile state.
  */
-export const useOwnUserHasRole = (role: UserRoleEnum) => {
-    const ownUser = useOwnUser();
-
-    if (isUndefined(ownUser)) {
-        return;
-    }
-
-    return ownUser?.role === role;
-}
+export const useOwnUserHasRole = (roleToCheck: UserRoleEnum) => {
+    const { role } = useAppSelector(x => x.profileReducer);
+    return role === roleToCheck;
+};
 
 /**
  * This hook returns if the JWT token has expired or not.
@@ -35,6 +32,6 @@ export const useTokenHasExpired = () => {
 
     return {
         loggedIn,
-        hasExpired: !exp || exp < now
+        hasExpired: !loggedIn || !exp || exp < now // Also consider !loggedIn as expired/invalid
     };
-}
+};

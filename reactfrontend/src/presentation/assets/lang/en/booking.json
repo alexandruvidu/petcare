@@ -1,0 +1,23 @@
+{
+  "booking.startDate": "Start Date & Time",
+  "booking.endDate": "End Date & Time",
+  "booking.notes": "Notes for Sitter",
+  "booking.selectPet": "Select Pet",
+  "booking.selectSitter": "Select Sitter",
+  "booking.status": "Status",
+  "booking.status.pending": "Pending",
+  "booking.status.accepted": "Accepted",
+  "booking.status.rejected": "Rejected",
+  "booking.status.completed": "Completed",
+  "booking.status.short.pending": "Pend.",
+  "booking.status.short.accepted": "Acc.",
+  "booking.status.short.rejected": "Rej.",
+  "booking.status.short.completed": "Comp.",
+  "booking.detail.title": "Booking Details",
+  "booking.schedule": "Schedule",
+  "booking.startDateShort": "Start",
+  "booking.endDateShort": "End",
+  "booking.duration": "Duration",
+  "booking.noNotesProvided": "No notes provided.",
+  "booking.updateStatus": "Update Status"
+}

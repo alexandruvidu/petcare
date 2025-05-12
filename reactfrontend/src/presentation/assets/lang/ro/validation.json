@@ -1,0 +1,11 @@
+{
+  "validation.required": "{field} este obligatoriu.",
+  "validation.ageRange": "Vârsta trebuie să fie un număr între 0 și 100.",
+  "validation.endDateAfterStartDate": "Data de sfârșit trebuie să fie după data de început.",
+  "validation.maxLength": "Lungimea maximă este de {max} caractere.",
+  "validation.numberInvalidRange": "Valoarea trebuie să fie între {min} și {max}.",
+  "validation.numberInvalid": "Vă rugăm introduceți un număr valid.",
+  "validation.ratingMin": "Ratingul trebuie să fie de cel puțin {min}.",
+  "validation.ratingMax": "Ratingul trebuie să fie de cel mult {max}.",
+  "validation.invalidRole": "Rol invalid selectat."
+}

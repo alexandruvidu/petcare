@@ -1,0 +1,12 @@
+{
+  "admin.users.title": "Manage Users",
+  "admin.users.header": "User Management",
+  "admin.users.addUser": "Add New User",
+  "admin.users.searchPlaceholder": "Search users by name or email...",
+  "admin.users.noUsers": "No users found.",
+  "admin.users.tableTitle": "Users List",
+  "admin.users.confirmDeleteUser": "Are you sure you want to delete {userName}?",
+  "admin.users.cannotDeleteSelf": "You cannot delete your own account.",
+  "admin.users.deleteSuccess": "User {userName} deleted successfully.",
+  "admin.users.addSuccess": "User {userName} added successfully."
+}

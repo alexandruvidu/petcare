@@ -1,5 +1,5 @@
 {
-    "notifications.messages.authenticationSuccess": "V-ati autentificat cu succes!",
+    "notifications.messages.authenticationSuccess": "V-ați autentificat cu succes!",
     "notifications.errors.sessionExpired": "Sesiunea a expirat, vă rugăm să vă conectați din nou!",
     "notifications.errors.unknownHappened": "A apărut o eroare necunoscută!",
     "notifications.errors.networkError": "A apărut o eroare de rețea, vă rugăm să vă verificați conexiunea la internet!",
@@ -12,5 +12,7 @@
     "notifications.errors.physicalFileNotFound": "Fișierul nu a fost găsit!",
     "notifications.errors.technicalError": "A apărut o eroare tehnică, vă rugăm să contactați asistența!",
     "notifications.errors.userAlreadyExists": "Utilizatorul există deja!",
-    "notifications.errors.wrongPassword": "Ați introdus o parolă greșită!"
+    "notifications.errors.wrongPassword": "Ați introdus o parolă greșită!",
+    "notifications.errors.registrationFailed": "Înregistrarea a eșuat",
+    "notifications.messages.registrationSuccess": "Înregistrare reușită! Bine ați venit la PetCare."
 }

@@ -1,0 +1,12 @@
+{
+  "admin.users.title": "Gestionare Utilizatori",
+  "admin.users.header": "Management Utilizatori",
+  "admin.users.addUser": "Adaugă Utilizator Nou",
+  "admin.users.searchPlaceholder": "Caută utilizatori după nume sau email...",
+  "admin.users.noUsers": "Niciun utilizator găsit.",
+  "admin.users.tableTitle": "Listă Utilizatori",
+  "admin.users.confirmDeleteUser": "Sigur doriți să ștergeți utilizatorul {userName}?",
+  "admin.users.cannotDeleteSelf": "Nu vă puteți șterge propriul cont.",
+  "admin.users.deleteSuccess": "Utilizatorul {userName} a fost șters cu succes.",
+  "admin.users.addSuccess": "Utilizatorul {userName} a fost adăugat cu succes."
+}

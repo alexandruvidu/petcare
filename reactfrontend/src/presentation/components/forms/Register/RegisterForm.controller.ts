@@ -1,13 +1,13 @@
 import { RegisterFormController, RegisterFormModel } from "./RegisterForm.types";
-import { yupResolver } from "@hookform/resolvers/yup"; // yupResolver is correct here
+import { yupResolver } from "@hookform/resolvers/yup";
 import { useIntl } from "react-intl";
 import * as yup from "yup";
-import { useForm, FieldValues, Resolver } from "react-hook-form"; // CORRECTED: Import Resolver from react-hook-form
+import { useForm, FieldValues, Resolver } from "react-hook-form";
 import { useRegister } from "@infrastructure/apis/api-management";
 import { useCallback } from "react";
-import { UserRoleEnum, ErrorCodes } from "@infrastructure/apis/client"; // Added ErrorCodes
+import { UserRoleEnum, ErrorCodes } from "@infrastructure/apis/client";
 import { useAppDispatch } from "@application/store";
-import { setToken } from "@application/state-slices";
+import { setLoginData } from "@application/state-slices"; // Use setLoginData as it handles both token and user
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { AppRoute } from "routes";
@@ -46,12 +46,12 @@ const useInitRegisterFormSchema = () => {
             .oneOf([yup.ref('password')], formatMessage({ id: "globals.validations.passwordsDoNotMatch" }))
             .required(formatMessage({ id: "globals.validations.requiredField" }, { fieldName: formatMessage({ id: "globals.confirmPassword" }) })),
         role: yup.mixed<AllowedRegistrationRole | ''>()
-            .oneOf([...allowedRegistrationRoles, ''], formatMessage({id: "validation.invalidRole"})) // Keep empty string for initial placeholder compatibility
+            .oneOf([...allowedRegistrationRoles, ''], formatMessage({id: "validation.invalidRole"}))
             .required(formatMessage({ id: "globals.validations.requiredField" }, { fieldName: formatMessage({ id: "labels.accountType" }) }))
             .test(
                 "role-not-empty",
                 formatMessage({ id: "globals.validations.requiredField" }, { fieldName: formatMessage({ id: "labels.accountType" }) }),
-                value => value !== '' // Ensure an actual role is selected
+                value => value !== ''
             )
     });
 
@@ -74,7 +74,7 @@ export const useRegisterFormController = (): RegisterFormController => {
         formState: { errors }
     } = useForm<RegisterFormModel>({
         defaultValues,
-        resolver: yupResolver(schema) as unknown as Resolver<RegisterFormModel, any>, // Cast for dynamic schema
+        resolver: yupResolver(schema) as unknown as Resolver<RegisterFormModel, any>,
     });
 
     const submit = useCallback(async (data: RegisterFormModel) => {
@@ -85,16 +85,17 @@ export const useRegisterFormController = (): RegisterFormController => {
         const apiData = {
             name: data.name,
             email: data.email,
-            password: data.password, // Assuming backend hashes this
+            password: data.password,
             phone: data.phone,
             role: data.role as UserRoleEnum
         };
         try {
             const result = await registerUser(apiData);
             if (result.response?.token && result.response?.user) {
-                dispatch(setToken(result.response.token));
-                localStorage.setItem('user', JSON.stringify(result.response.user));
-                window.dispatchEvent(new Event('login'));
+                // Use setLoginData as it correctly updates all necessary profile state including user DTO
+                dispatch(setLoginData({ token: result.response.token, user: result.response.user }));
+
+                window.dispatchEvent(new Event('login')); // Or 'registerSuccess'
                 toast.success(formatMessage({ id: "notifications.messages.registrationSuccess" }));
 
                 if (result.response.user.role === UserRoleEnum.Client) {

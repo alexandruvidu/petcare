@@ -1,0 +1,11 @@
+{
+  "validation.required": "{field} is required.",
+  "validation.ageRange": "Age must be a number between 0 and 100.",
+  "validation.endDateAfterStartDate": "End date must be after start date.",
+  "validation.maxLength": "Maximum length is {max} characters.",
+  "validation.numberInvalidRange": "Value must be between {min} and {max}.",
+  "validation.numberInvalid": "Please enter a valid number.",
+  "validation.ratingMin": "Rating must be at least {min}.",
+  "validation.ratingMax": "Rating must be at most {max}.",
+  "validation.invalidRole": "Invalid role selected."
+}

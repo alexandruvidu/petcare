@@ -1,0 +1,13 @@
+{
+  "profile.client.title": "Profilul Meu",
+  "profile.client.header": "Gestionează Contul",
+  "profile.client.subtitle": "Actualizează informațiile personale și parola.",
+  "profile.sitter.title": "Profilul și Contul Meu de Sitter",
+  "profile.sitter.header": "Gestionează-ți Profilul și Contul",
+  "profile.sitter.tab.account": "Detalii Cont",
+  "profile.sitter.tab.professional": "Profil Sitter",
+  "profile.sitter.professional.noProfile": "Nu ți-ai creat încă profilul de sitter. Completează această secțiune pentru a-ți face profilul vizibil proprietarilor de animale!",
+  "profile.sitterProfessional.title": "Editează Profilul de Sitter",
+  "profile.sitterProfessional.header": "Profilul Tău de Sitter",
+  "profile.sitterProfessional.subtitle": "Gestionează detaliile profesionale pe care le vor vedea proprietarii de animale."
+}

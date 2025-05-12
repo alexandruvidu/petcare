@@ -4,17 +4,18 @@ import { useIntl } from "react-intl";
 import * as yup from "yup";
 import { isUndefined } from "lodash";
 import { useForm } from "react-hook-form";
-import { useQueryClient } from "@tanstack/react-query";
-import {useLogin} from "@infrastructure/apis/api-management";
+// import { useQueryClient } from "@tanstack/react-query"; // Not strictly needed here unless invalidating other queries on login
+import { useLogin } from "@infrastructure/apis/api-management";
 import { useCallback } from "react";
 import { useAppRouter } from "@infrastructure/hooks/useAppRouter";
-import { useAppDispatch } from "@application/store";
-import { setToken } from "@application/state-slices";
+import { useAppDispatch } from "@application/store"; // CORRECTED IMPORT PATH
 import { toast } from "react-toastify";
+import { UserRoleEnum } from "@infrastructure/apis/client";
+import { setLoginData } from "@application/state-slices/profile/profileSlice"; // Keep this for setLoginData
+import { AppRoute } from "routes";
 
 /**
  * Use a function to return the default values of the form and the validation schema.
- * You can add other values as the default, for example when populating the form with data to update an entity in the backend.
  */
 const getDefaultValues = (initialData?: { email: string }) => {
     const defaultValues = {
@@ -39,32 +40,26 @@ const useInitLoginForm = () => {
     const { formatMessage } = useIntl();
     const defaultValues = getDefaultValues();
 
-    const schema = yup.object().shape({ // Use yup to build the validation schema of the form.
-        email: yup.string() // This field should be a string.
-            .required(formatMessage( // Use formatMessage to get the translated error message.
+    const schema = yup.object().shape({
+        email: yup.string()
+            .required(formatMessage(
                 { id: "globals.validations.requiredField" },
-                {
-                    fieldName: formatMessage({ // Format the message with other translated strings.
-                        id: "globals.email",
-                    }),
-                })) // The field is required and needs a error message when it is empty.
-            .email() // This requires the field to have a email format.
-            .default(defaultValues.email), // Add a default value for the field.
+                { fieldName: formatMessage({ id: "globals.email" }) }
+            ))
+            .email(formatMessage({ id: "globals.validations.emailInvalid" })) // Added specific email invalid message
+            .default(defaultValues.email),
         password: yup.string()
             .required(formatMessage(
                 { id: "globals.validations.requiredField" },
-                {
-                    fieldName: formatMessage({
-                        id: "globals.password",
-                    }),
-                }))
+                { fieldName: formatMessage({ id: "globals.password" }) }
+            ))
             .default(defaultValues.password),
     });
 
-    const resolver = yupResolver(schema); // Get the resolver.
+    const resolver = yupResolver(schema);
 
-    return { defaultValues, resolver }; // Return the default values and the resolver.
-}
+    return { defaultValues, resolver };
+};
 
 /**
  * Create a controller hook for the form and return any data that is necessary for the form.
@@ -72,38 +67,76 @@ const useInitLoginForm = () => {
 export const useLoginFormController = (): LoginFormController => {
     const { formatMessage } = useIntl();
     const { defaultValues, resolver } = useInitLoginForm();
-    const { redirectToHome } = useAppRouter();
+    const { navigate } = useAppRouter(); // Using navigate directly for more flexibility
     const { mutateAsync: login, status } = useLogin();
-    const queryClient = useQueryClient();
+    // const queryClient = useQueryClient(); // Keep if other queries need invalidation
     const dispatch = useAppDispatch();
-    const submit = useCallback((data: LoginFormModel) => // Create a submit callback to send the form data to the backend.
-        login(data).then((result) => {
-            dispatch(setToken(result.response?.token ?? ''));
-            toast(formatMessage({ id: "notifications.messages.authenticationSuccess" }));
-            redirectToHome();
-        }), [login, queryClient, redirectToHome, dispatch]);
+
+    const submit = useCallback(async (data: LoginFormModel) => { // Made submit async
+        try {
+            const result = await login(data); // Await the login mutation
+
+            if (result.response) {
+                const { token, user } = result.response;
+                if (token && user) {
+                    dispatch(setLoginData({ token, user })); // Dispatch both token and user DTO
+
+                    window.dispatchEvent(new Event("login")); // Notify Navbar or other components
+
+                    toast.success(formatMessage({ id: "notifications.messages.authenticationSuccess" }));
+
+                    // Redirect based on role
+                    switch (user.role) {
+                        case UserRoleEnum.Client:
+                            navigate(AppRoute.ClientDashboard);
+                            break;
+                        case UserRoleEnum.Sitter:
+                            navigate(AppRoute.SitterDashboard);
+                            break;
+                        case UserRoleEnum.Admin:
+                            navigate(AppRoute.Users); // Or a dedicated Admin Dashboard
+                            break;
+                        default:
+                            navigate(AppRoute.Index);
+                            break;
+                    }
+                } else {
+                    toast.error(formatMessage({ id: "notifications.errors.loginFailed" }) + ": Invalid server response (missing token or user data).");
+                }
+            } else if (result.errorMessage) {
+                toast.error(result.errorMessage.message || formatMessage({ id: "notifications.errors.loginFailed" }));
+            } else {
+                toast.error(formatMessage({ id: "notifications.errors.loginFailed" }));
+            }
+        } catch (error: any) {
+            console.error("Login mutation error:", error);
+            const apiErrorMessage = error?.response?.data?.errorMessage?.message || error?.message;
+            toast.error(apiErrorMessage || formatMessage({ id: "error.defaultApi" }));
+        }
+    }, [login, dispatch, navigate, formatMessage]);
+
 
     const {
         register,
         handleSubmit,
         formState: { errors }
-    } = useForm<LoginFormModel>({ // Use the useForm hook to get callbacks and variables to work with the form.
-        defaultValues, // Initialize the form with the default values.
-        resolver // Add the validation resolver.
+    } = useForm<LoginFormModel>({
+        defaultValues,
+        resolver
     });
 
     return {
-        actions: { // Return any callbacks needed to interact with the form.
-            handleSubmit, // Add the form submit handle.
-            submit, // Add the submit handle that needs to be passed to the submit handle.
-            register // Add the variable register to bind the form fields in the UI with the form variables.
+        actions: {
+            handleSubmit,
+            submit,
+            register
         },
         computed: {
             defaultValues,
-            isSubmitting: status === "pending" // Return if the form is still submitting or nit.
+            isSubmitting: status === "pending"
         },
         state: {
-            errors // Return what errors have occurred when validating the form input.
+            errors
         }
-    }
-}
+    };
+};

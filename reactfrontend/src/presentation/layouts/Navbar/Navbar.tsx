@@ -1,27 +1,48 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
-import { AppBar, Toolbar, Button, IconButton, Typography, Box, Drawer, List, ListItem, ListItemButton, ListItemText, useTheme, useMediaQuery, Divider, Avatar } from '@mui/material'; // Added ListItemButton
+import { AppBar, Toolbar, Button, IconButton, Typography, Box, Drawer, List, ListItem, ListItemButton, ListItemText, useTheme, useMediaQuery, Divider, Avatar, Tooltip } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useTokenHasExpired } from '@infrastructure/hooks/useOwnUser';
 import { useAppDispatch } from '@application/store';
 import { resetProfile } from '@application/state-slices';
 import { AppRoute } from 'routes';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage, defineMessages, useIntl } from 'react-intl';
 import { UserRoleEnum } from '@infrastructure/apis/client';
 import { NavbarLanguageSelector } from '@presentation/components/ui/NavbarLanguageSelector/NavbarLanguageSelector';
+import PetsIcon from '@mui/icons-material/Pets';
+
+const navBarMessages = defineMessages({
+  home: { id: 'nav.home', defaultMessage: 'Home' },
+  about: { id: 'nav.about', defaultMessage: 'About' },
+  login: { id: 'nav.login', defaultMessage: 'Login' },
+  register: { id: 'nav.register', defaultMessage: 'Register' },
+  dashboard: { id: 'nav.dashboard', defaultMessage: 'Dashboard' },
+  myPets: { id: 'nav.myPets', defaultMessage: 'My Pets' },
+  myBookings: { id: 'nav.myBookings', defaultMessage: 'My Bookings' },
+  findSitters: { id: 'nav.findSitters', defaultMessage: 'Find Sitters' },
+  profile: { id: 'nav.profile', defaultMessage: 'Profile' }, // Re-added for drawer and tooltip
+  myReviews: { id: 'nav.myReviews', defaultMessage: 'My Reviews' },
+  logout: { id: 'nav.logout', defaultMessage: 'Logout' },
+  adminUsers: { id: 'nav.adminUsers', defaultMessage: 'Manage Users' },
+  roleClient: { id: 'globals.client', defaultMessage: 'Client' },
+  roleSitter: { id: 'globals.sitter', defaultMessage: 'Sitter' },
+  roleAdmin: { id: 'globals.admin', defaultMessage: 'Admin' },
+});
+
+type NavMessageKey = keyof typeof navBarMessages;
 
 interface NavLink {
-  name: string;
+  messageKey: NavMessageKey;
   path: AppRoute;
   roles?: UserRoleEnum[];
-  publicOnly?: boolean; // Renamed from public to avoid conflict, true if only visible when not logged in
-  authenticatedOnly?: boolean; // Renamed from authenticated
-  hideWhenLoggedIn?: boolean; // Explicitly for Login/Register
+  publicOnly?: boolean;
+  authenticatedOnly?: boolean;
+  hideWhenLoggedIn?: boolean;
 }
 
 export const Navbar = () => {
   const { formatMessage } = useIntl();
-  const [user, setUser] = useState<{ id: string, name: string; role: UserRoleEnum; } | null>(null); // Added id
+  const [user, setUser] = useState<{ id: string, name: string; role: UserRoleEnum; } | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -70,93 +91,163 @@ export const Navbar = () => {
 
   const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
 
+  // The 'profile' link is not in allNavLinks for the main bar,
+  // but its messageKey is in navBarMessages for the drawer and Avatar tooltip.
   const allNavLinks: NavLink[] = [
-    { name: formatMessage({ id: 'nav.home' }), path: AppRoute.Index, publicOnly: false, authenticatedOnly: false }, // Visible to all
-    { name: formatMessage({ id: 'nav.about' }), path: AppRoute.About, publicOnly: false, authenticatedOnly: false }, // Visible to all
-    { name: formatMessage({ id: 'nav.login' }), path: AppRoute.Login, publicOnly: true, hideWhenLoggedIn: true },
-    { name: formatMessage({ id: 'nav.register' }), path: AppRoute.Register, publicOnly: true, hideWhenLoggedIn: true },
-    { name: formatMessage({ id: 'nav.dashboard' }), path: AppRoute.ClientDashboard, roles: [UserRoleEnum.Client], authenticatedOnly: true },
-    { name: formatMessage({ id: 'nav.myPets' }), path: AppRoute.ClientPets, roles: [UserRoleEnum.Client], authenticatedOnly: true },
-    { name: formatMessage({ id: 'nav.myBookings' }), path: AppRoute.ClientBookings, roles: [UserRoleEnum.Client], authenticatedOnly: true },
-    { name: formatMessage({ id: 'nav.findSitters' }), path: AppRoute.Sitters, roles: [UserRoleEnum.Client], authenticatedOnly: true },
-    { name: formatMessage({ id: 'nav.dashboard' }), path: AppRoute.SitterDashboard, roles: [UserRoleEnum.Sitter], authenticatedOnly: true },
-    { name: formatMessage({ id: 'nav.myBookings' }), path: AppRoute.SitterBookings, roles: [UserRoleEnum.Sitter], authenticatedOnly: true },
-    { name: formatMessage({ id: 'nav.myReviews' }), path: AppRoute.SitterReviews, roles: [UserRoleEnum.Sitter], authenticatedOnly: true },
-    { name: formatMessage({ id: 'nav.profile' }), path: AppRoute.Profile, authenticatedOnly: true },
+    { messageKey: 'home', path: AppRoute.Index, hideWhenLoggedIn: true }, // Shows only if not logged in
+    { messageKey: 'about', path: AppRoute.About, hideWhenLoggedIn: true }, // Shows only if not logged in
+    { messageKey: 'login', path: AppRoute.Login, hideWhenLoggedIn: true }, // Shows only if not logged in
+    { messageKey: 'register', path: AppRoute.Register, hideWhenLoggedIn: true }, // Shows only if not logged in
+    { messageKey: 'dashboard', path: AppRoute.ClientDashboard, roles: [UserRoleEnum.Client], authenticatedOnly: true },
+    { messageKey: 'myPets', path: AppRoute.ClientPets, roles: [UserRoleEnum.Client], authenticatedOnly: true },
+    { messageKey: 'myBookings', path: AppRoute.ClientBookings, roles: [UserRoleEnum.Client], authenticatedOnly: true },
+    { messageKey: 'findSitters', path: AppRoute.Sitters, roles: [UserRoleEnum.Client], authenticatedOnly: true },
+    { messageKey: 'dashboard', path: AppRoute.SitterDashboard, roles: [UserRoleEnum.Sitter], authenticatedOnly: true },
+    { messageKey: 'myBookings', path: AppRoute.SitterBookings, roles: [UserRoleEnum.Sitter], authenticatedOnly: true },
+    { messageKey: 'myReviews', path: AppRoute.SitterReviews, roles: [UserRoleEnum.Sitter], authenticatedOnly: true },
+    // Profile is handled by Avatar, but we might need a text link in the drawer
+    { messageKey: 'adminUsers', path: AppRoute.Users, roles: [UserRoleEnum.Admin], authenticatedOnly: true },
   ];
 
   const getFilteredNavLinks = () => {
     if (loggedIn && user) {
+      // User is logged in
       return allNavLinks.filter(link => {
-        if (link.hideWhenLoggedIn) return false;
-        if (link.authenticatedOnly || (link.roles && link.roles.includes(user.role))) return true;
-        return !link.publicOnly && !link.authenticatedOnly && !link.roles; // For truly public links like Home, About when logged in
+        if (link.hideWhenLoggedIn) return false; // Crucial: hides Home, About, Login, Register
+
+        // Role-specific dashboard
+        if (link.messageKey === 'dashboard') {
+          return (user.role === UserRoleEnum.Client && link.path === AppRoute.ClientDashboard) ||
+              (user.role === UserRoleEnum.Sitter && link.path === AppRoute.SitterDashboard);
+        }
+        // Role-specific bookings
+        if (link.messageKey === 'myBookings') {
+          return (user.role === UserRoleEnum.Client && link.path === AppRoute.ClientBookings) ||
+              (user.role === UserRoleEnum.Sitter && link.path === AppRoute.SitterBookings);
+        }
+        // Admin users link
+        if (link.messageKey === 'adminUsers') {
+          return user.role === UserRoleEnum.Admin && link.path === AppRoute.Users;
+        }
+
+        // Other authenticated links based on roles or general authenticatedOnly flag
+        if (link.roles && link.roles.includes(user.role)) return true;
+        if (link.authenticatedOnly && !link.roles) return true; // E.g. general profile link if it were here
+
+        return false; // Default to hide if no condition met for logged-in user
+      });
+    } else {
+      // User is NOT logged in
+      return allNavLinks.filter(link => {
+        // Show links that are explicitly for non-logged in (hideWhenLoggedIn = true)
+        // OR general public links that are not authenticatedOnly and have no roles
+        return link.hideWhenLoggedIn || (!link.authenticatedOnly && !link.roles);
       });
     }
-    return allNavLinks.filter(link => !link.authenticatedOnly && !link.roles && !link.hideWhenLoggedIn); // Public not-logged-in links
   };
 
   const navLinksToDisplay = getFilteredNavLinks();
 
+  const getUserRoleMessageKey = (role: UserRoleEnum): NavMessageKey => {
+    switch (role) {
+      case UserRoleEnum.Client: return 'roleClient';
+      case UserRoleEnum.Sitter: return 'roleSitter';
+      case UserRoleEnum.Admin: return 'roleAdmin';
+      default: return 'roleClient';
+    }
+  };
+
   const drawerContent = (
-      <Box onClick={isMobile ? handleDrawerToggle : undefined} sx={{ textAlign: 'center', width: 250 }}>
-        <Typography variant="h6" sx={{ my: 2, color: 'primary.main' }}>PetCare</Typography>
+      <Box onClick={isMobile ? handleDrawerToggle : undefined} sx={{ textAlign: 'center', width: 250, height: '100%', display: 'flex', flexDirection: 'column' }}>
+        <Box sx={{my: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'primary.main' }}>
+          <PetsIcon sx={{ mr: 1 }} />
+          <Typography variant="h6" noWrap>PetCare</Typography>
+        </Box>
         <Divider />
-        <List>
+        <List sx={{flexGrow: 1}}>
           {navLinksToDisplay.map((link) => (
-              <ListItem key={`${link.name}-${link.path}`} disablePadding>
+              <ListItem key={`${link.messageKey}-${link.path}`} disablePadding>
                 <ListItemButton component={RouterLink} to={link.path} selected={location.pathname === link.path}>
-                  <ListItemText primary={link.name} />
+                  <ListItemText primary={<FormattedMessage {...navBarMessages[link.messageKey]} />} />
                 </ListItemButton>
               </ListItem>
           ))}
+          {/* Profile link in drawer if logged in */}
+          {loggedIn && user && (
+              <ListItem disablePadding>
+                <ListItemButton component={RouterLink} to={AppRoute.Profile} selected={location.pathname === AppRoute.Profile}>
+                  <ListItemText primary={<FormattedMessage {...navBarMessages.profile} />} />
+                </ListItemButton>
+              </ListItem>
+          )}
           {loggedIn && user && (
               <>
                 <Divider sx={{ my: 1 }}/>
-                <ListItem>
-                  <Avatar sx={{ bgcolor: 'secondary.main', mr: 1 }}>{user.name?.[0]?.toUpperCase()}</Avatar>
-                  <ListItemText primary={user.name} secondary={user.role} />
+                <ListItem sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt:1 }}>
+                  <Avatar sx={{ bgcolor: 'secondary.main', mb: 1, width: 48, height: 48 }}>{user.name?.[0]?.toUpperCase()}</Avatar>
+                  <ListItemText
+                      primary={user.name}
+                      secondary={<FormattedMessage {...navBarMessages[getUserRoleMessageKey(user.role)]} />}
+                      primaryTypographyProps={{fontWeight: 'medium'}}
+                  />
                 </ListItem>
                 <ListItem disablePadding>
-                  <ListItemButton onClick={handleLogout}>
-                    <ListItemText primary={formatMessage({ id: 'nav.logout' })} sx={{color: 'error.main'}}/>
+                  <ListItemButton onClick={handleLogout} sx={{justifyContent: 'center'}}>
+                    <ListItemText primary={<FormattedMessage {...navBarMessages.logout} />} sx={{color: 'error.main', textAlign: 'center'}}/>
                   </ListItemButton>
                 </ListItem>
               </>
           )}
         </List>
-        <Box sx={{ p: 2, position: 'absolute', bottom: 0, width: '100%'}}>
+        <Box sx={{ p: 2, mt: 'auto'}}>
           <NavbarLanguageSelector />
         </Box>
       </Box>
   );
 
   return (
-      <AppBar position="sticky" sx={{ bgcolor: 'primary.main' }}>
-        <Toolbar>
+      <AppBar position="sticky" sx={{ bgcolor: 'background.paper', color: 'text.primary' }}>
+        <Toolbar sx={{justifyContent: 'space-between'}}>
+          <Box sx={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'primary.main' }} component={RouterLink}
+               to={loggedIn && user ? (user.role === UserRoleEnum.Client ? AppRoute.ClientDashboard : user.role === UserRoleEnum.Sitter ? AppRoute.SitterDashboard : AppRoute.Users ) : AppRoute.Index}>
+            <PetsIcon sx={{ mr: 1, fontSize: '2rem' }} />
+            <Typography variant="h5" component="div" sx={{ fontWeight: 'bold' }}>
+              PetCare
+            </Typography>
+          </Box>
+
           {isMobile && (
-              <IconButton color="inherit" aria-label="open drawer" edge="start" onClick={handleDrawerToggle} sx={{ mr: 2 }}>
+              <IconButton color="inherit" aria-label="open drawer" edge="end" onClick={handleDrawerToggle}>
                 <MenuIcon />
               </IconButton>
           )}
-          <Typography variant="h6" component={RouterLink} to={AppRoute.Index} sx={{ flexGrow: 1, color: 'inherit', textDecoration: 'none' }}>
-            PetCare
-          </Typography>
+
           {!isMobile && (
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 {navLinksToDisplay.map((link) => (
-                    <Button color="inherit" component={RouterLink} to={link.path} key={`${link.name}-${link.path}`}
-                            sx={{ my: 1, mx: 1.5, backgroundColor: location.pathname === link.path ? 'rgba(255,255,255,0.2)' : 'transparent', '&:hover': { backgroundColor: 'rgba(255,255,255,0.1)'} }}>
-                      {link.name}
+                    <Button
+                        color={location.pathname === link.path ? "primary" : "inherit"}
+                        variant={location.pathname === link.path ? "outlined" : "text"}
+                        component={RouterLink}
+                        to={link.path}
+                        key={`${link.messageKey}-${link.path}`}
+                        sx={{ my: 1, mx: 1 }}
+                    >
+                      <FormattedMessage {...navBarMessages[link.messageKey]} />
                     </Button>
                 ))}
-                <Box sx={{ml: 1, mr: 2}}> <NavbarLanguageSelector /> </Box>
+                <Box sx={{ml: 1, mr: 1}}> <NavbarLanguageSelector /> </Box>
                 {loggedIn && user && (
                     <>
-                      <Avatar sx={{ bgcolor: 'secondary.main', width: 32, height: 32, ml:1, mr: 1 }}>{user.name?.[0]?.toUpperCase()}</Avatar>
-                      <Typography sx={{ mr: 2, color: 'white' }}>{user.name}</Typography>
-                      <Button color="inherit" variant="outlined" onClick={handleLogout} sx={{borderColor: 'rgba(255,255,255,0.5)', '&:hover': {borderColor: 'white'}}}>
-                        <FormattedMessage id="nav.logout" />
+                      <Tooltip title={formatMessage(navBarMessages.profile)}>
+                        <IconButton component={RouterLink} to={AppRoute.Profile} sx={{ p: 0, ml: 1.5 }}>
+                          <Avatar sx={{ bgcolor: 'secondary.main', width: 36, height: 36 }}>
+                            {user.name?.[0]?.toUpperCase()}
+                          </Avatar>
+                        </IconButton>
+                      </Tooltip>
+                      <Button color="primary" variant="text" onClick={handleLogout} sx={{ml:1.5}}>
+                        <FormattedMessage {...navBarMessages.logout} />
                       </Button>
                     </>
                 )}
@@ -164,7 +255,7 @@ export const Navbar = () => {
           )}
         </Toolbar>
         {isMobile && (
-            <Drawer variant="temporary" open={mobileOpen} onClose={handleDrawerToggle} ModalProps={{ keepMounted: true }}>
+            <Drawer anchor="right" variant="temporary" open={mobileOpen} onClose={handleDrawerToggle} ModalProps={{ keepMounted: true }} PaperProps={{sx: {width: 250}}}>
               {drawerContent}
             </Drawer>
         )}

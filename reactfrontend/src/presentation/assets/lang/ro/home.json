@@ -1,0 +1,20 @@
+{
+  "home.title": "PetCare | Acasă",
+  "home.hero.title": "Îngrijirea animalelor tale când tu nu poți",
+  "home.hero.subtitle": "PetCare conectează proprietarii de animale cu pet sitteri de încredere din zona ta. Fie că este o zi, un weekend sau mai mult - animalele tale vor primi îngrijirea pe care o merită.",
+  "home.hero.getStarted": "Începe Acum",
+  "home.hero.learnMore": "Află Mai Mult",
+  "home.services.overline": "Serviciile Noastre",
+  "home.services.title": "Tot ce are nevoie animalul tău",
+  "home.services.subtitle": "De la plimbări și hrănire la cazare peste noapte, sitterii noștri oferă cea mai bună îngrijire pentru prietenii tăi blănoși.",
+  "home.services.petSitting.title": "Pet Sitting la domiciliu",
+  "home.services.petSitting.description": "Sitterii noștri pot vizita casa ta pentru a hrăni, a se juca și a avea grijă de animalele tale cât timp ești plecat.",
+  "home.services.boarding.title": "Cazare la sitter",
+  "home.services.boarding.description": "Animalul tău poate sta la domiciliul unui sitter, primind atenție și îngrijire 24/7 într-un mediu sigur.",
+  "home.services.dogWalking.title": "Plimbare Câini",
+  "home.services.dogWalking.description": "Plimbările regulate mențin câinele tău fericit și sănătos, oferindu-i exercițiu și stimulare mentală.",
+  "home.cta.title": "Ești gata să găsești pet sitter-ul perfect?",
+  "home.cta.subtitle": "Alătură-te miilor de proprietari de animale mulțumiți care încredințează PetCare prietenii lor blănoși, cu pene sau solzi.",
+  "home.cta.signUp": "Înscrie-te gratuit",
+  "footer.copyright": "© {year} PetCare. Toate drepturile rezervate."
+}

@@ -2,7 +2,7 @@ import React, { Fragment, useEffect, useState } from 'react';
 import { WebsiteLayout } from "@presentation/layouts/WebsiteLayout";
 import { Seo } from "@presentation/components/ui/Seo";
 import { useIntl, FormattedMessage } from 'react-intl';
-import { Container, Typography, Grid, Paper, Box, Button } from '@mui/material';
+import { Container, Typography, Grid, Paper, Box, Button, Alert } from '@mui/material'; // Added Alert
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { AppRoute } from 'routes';
 import EventNoteIcon from '@mui/icons-material/EventNote';
@@ -10,32 +10,9 @@ import StarIcon from '@mui/icons-material/Star';
 import PersonIcon from '@mui/icons-material/Person';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import { useGetMyBookings, useGetReviewsForSitter, useGetMySitterProfile } from '@infrastructure/apis/api-management';
-import { BookingDTO, BookingStatusEnum, UserRoleEnum } from '@infrastructure/apis/client';
+import { BookingDTO, BookingStatusEnum } from '@infrastructure/apis/client'; // UserRoleEnum removed as not directly used here
 import { DataLoadingContainer } from '@presentation/components/ui/LoadingDisplay';
 
-// i18n keys:
-// sitter.dashboard.title: "Sitter Dashboard"
-// sitter.dashboard.welcome: "Welcome, {name}!"
-// sitter.dashboard.subtitle: "Manage your pet sitting bookings and profile."
-// sitter.dashboard.stats.activeBookings: "Active/Pending Bookings"
-// sitter.dashboard.stats.upcomingBookings: "Upcoming Bookings"
-// sitter.dashboard.stats.completedBookings: "Completed Bookings"
-// sitter.dashboard.stats.averageRating: "Average Rating"
-// sitter.dashboard.stats.reviewCount: "{count} Reviews"
-// sitter.dashboard.actions.manageBookings: "Manage Bookings"
-// sitter.dashboard.actions.viewSchedule: "View Schedule"
-// sitter.dashboard.actions.viewHistory: "View History"
-// sitter.dashboard.actions.viewReviews: "View Reviews"
-// sitter.dashboard.profilePrompt.title: "Complete Your Sitter Profile"
-// sitter.dashboard.profilePrompt.subtitle: "Your profile isn't visible to pet owners yet. Add your bio, experience, and rates to start getting bookings!"
-// sitter.dashboard.profilePrompt.button: "Complete Profile"
-// sitter.dashboard.quickActions.title: "Quick Actions"
-// sitter.dashboard.quickActions.manageBookings.title: "Manage Bookings"
-// sitter.dashboard.quickActions.manageBookings.subtitle: "Accept or reject booking requests"
-// sitter.dashboard.quickActions.updateProfile.title: "Update Profile"
-// sitter.dashboard.quickActions.updateProfile.subtitle: "Edit your bio, rates, and availability"
-// sitter.dashboard.quickActions.viewReviews.title: "View Your Reviews"
-// sitter.dashboard.quickActions.viewReviews.subtitle: "See feedback from pet owners"
 
 interface StatCardProps {
     title: string;
@@ -47,7 +24,7 @@ interface StatCardProps {
 }
 
 const StatCard: React.FC<StatCardProps> = ({ title, value, icon, linkTo, linkText, subValue }) => (
-    <Grid item xs={12} sm={6} md={4} lg={3}> {/* Adjusted for potentially more cards */}
+    <Grid item xs={12} sm={6} md={4} lg={3}>
         <Paper elevation={3} sx={{ p: 3, display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%' }}>
             <Box sx={{ color: 'primary.main', mb: 1 }}>{icon}</Box>
             <Typography variant="h6" component="h3" gutterBottom align="center">{title}</Typography>
@@ -99,17 +76,9 @@ export const SitterDashboard: React.FC = () => {
     const { data: reviewsData, isLoading: isLoadingReviews, isError: isErrorReviews, refetch: refetchReviews } = useGetReviewsForSitter(user.id);
     const { data: profileData, isLoading: isLoadingProfile, isError: isErrorProfile, refetch: refetchProfile } = useGetMySitterProfile();
 
-    const [profileComplete, setProfileComplete] = useState(false);
-
-    useEffect(() => {
-        if (profileData?.response) {
-            // Basic check: if bio exists, consider profile somewhat complete. Could be more thorough.
-            setProfileComplete(!!profileData.response.bio);
-        } else if (!isLoadingProfile && profileData && !profileData.response) { // explicit null response
-            setProfileComplete(false);
-        }
-    }, [profileData, isLoadingProfile]);
-
+    // profileComplete will be true if profileData.response exists and has a bio (or any other significant field)
+    // and we are not currently loading the profile.
+    const profileComplete = !isLoadingProfile && !!profileData?.response?.bio;
 
     const isLoading = isLoadingBookings || isLoadingReviews || isLoadingProfile;
     const isError = isErrorBookings || isErrorReviews || isErrorProfile;
@@ -125,8 +94,8 @@ export const SitterDashboard: React.FC = () => {
         ? (reviewsData!.response!.reduce((sum, review) => sum + (review.rating || 0), 0) / reviewCount).toFixed(1)
         : "0.0";
 
-    const goToProfileProfessionalTab = () => {
-        navigate(AppRoute.Profile, { state: { defaultTab: 'professional' } });
+    const goToProfilePage = () => { // Renamed for clarity, SitterProfilePage is now the target
+        navigate(AppRoute.Profile); // Navigates to /profile, App.tsx handles which component
     };
 
     return (
@@ -141,14 +110,18 @@ export const SitterDashboard: React.FC = () => {
                         <FormattedMessage id="sitter.dashboard.subtitle" />
                     </Typography>
 
-                    {!isLoadingProfile && !profileComplete && (
-                        <Paper elevation={2} sx={{p:3, my:3, backgroundColor: 'warning.light', borderColor: 'warning.main', borderWidth:1, borderStyle: 'solid'}}>
-                            <Typography variant="h6" color="warning.dark" gutterBottom><FormattedMessage id="sitter.dashboard.profilePrompt.title" /></Typography>
-                            <Typography color="warning.dark" paragraph><FormattedMessage id="sitter.dashboard.profilePrompt.subtitle" /></Typography>
-                            <Button variant="contained" color="warning" onClick={goToProfileProfessionalTab}>
-                                <FormattedMessage id="sitter.dashboard.profilePrompt.button" />
-                            </Button>
-                        </Paper>
+                    {/* Show profile prompt only if profile loading is done and profile is not complete */}
+                    {!isLoadingProfile && !isErrorProfile && !profileComplete && (
+                        <Alert severity="warning" sx={{p:2, my:3, }}
+                               action={
+                                   <Button color="inherit" size="small" onClick={goToProfilePage}>
+                                       <FormattedMessage id="sitter.dashboard.profilePrompt.button" />
+                                   </Button>
+                               }
+                        >
+                            <Typography fontWeight="medium"><FormattedMessage id="sitter.dashboard.profilePrompt.title" /></Typography>
+                            <FormattedMessage id="sitter.dashboard.profilePrompt.subtitle" />
+                        </Alert>
                     )}
 
 
@@ -201,7 +174,7 @@ export const SitterDashboard: React.FC = () => {
                                 title={formatMessage({id: "sitter.dashboard.quickActions.updateProfile.title"})}
                                 subtitle={formatMessage({id: "sitter.dashboard.quickActions.updateProfile.subtitle"})}
                                 icon={<PersonIcon />}
-                                onClick={goToProfileProfessionalTab}
+                                onClick={goToProfilePage}
                             />
                             <QuickActionCard
                                 title={formatMessage({id: "sitter.dashboard.quickActions.viewReviews.title"})}

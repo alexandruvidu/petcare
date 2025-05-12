@@ -1,0 +1,12 @@
+{
+  "success.profileUpdate": "Profile updated successfully!",
+  "success.profileCreated": "Profile created successfully!",
+  "success.petAdded": "Pet added successfully!",
+  "success.petUpdated": "Pet updated successfully!",
+  "success.petDeleted": "Pet deleted successfully!",
+  "success.bookingCreated": "Booking created successfully!",
+  "success.bookingUpdated": "Booking updated successfully!",
+  "success.bookingDeleted": "Booking deleted successfully!",
+  "success.reviewSubmitted": "Review submitted successfully!",
+  "success.reviewUpdated": "Review updated successfully!"
+}

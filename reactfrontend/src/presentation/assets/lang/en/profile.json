@@ -1,0 +1,13 @@
+{
+  "profile.client.title": "My Profile",
+  "profile.client.header": "Manage Your Account",
+  "profile.client.subtitle": "Update your personal information and password.",
+  "profile.sitter.title": "My Sitter Profile & Account",
+  "profile.sitter.header": "Manage Your Profile & Account",
+  "profile.sitter.tab.account": "Account Details",
+  "profile.sitter.tab.professional": "Sitter Profile",
+  "profile.sitter.professional.noProfile": "You haven't created your sitter profile yet. Fill out this section to make your profile visible to pet owners!",
+  "profile.sitterProfessional.title": "Edit Sitter Profile",
+  "profile.sitterProfessional.header": "Your Sitter Profile",
+  "profile.sitterProfessional.subtitle": "Manage your professional details that pet owners will see."
+}

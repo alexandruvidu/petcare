@@ -1,0 +1,23 @@
+{
+  "booking.startDate": "Data și Ora de Început",
+  "booking.endDate": "Data și Ora de Sfârșit",
+  "booking.notes": "Notițe pentru Sitter",
+  "booking.selectPet": "Selectează Animalul",
+  "booking.selectSitter": "Selectează Sitter-ul",
+  "booking.status": "Status",
+  "booking.status.pending": "În Așteptare",
+  "booking.status.accepted": "Acceptată",
+  "booking.status.rejected": "Respinsă",
+  "booking.status.completed": "Finalizată",
+  "booking.status.short.pending": "Aștept.",
+  "booking.status.short.accepted": "Acc.",
+  "booking.status.short.rejected": "Resp.",
+  "booking.status.short.completed": "Fin.",
+  "booking.detail.title": "Detalii Rezervare",
+  "booking.schedule": "Program",
+  "booking.startDateShort": "Start",
+  "booking.endDateShort": "Sfârșit",
+  "booking.duration": "Durată",
+  "booking.noNotesProvided": "Nicio notiță furnizată.",
+  "booking.updateStatus": "Actualizează Status"
+}

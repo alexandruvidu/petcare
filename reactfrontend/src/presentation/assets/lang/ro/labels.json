@@ -1,12 +1,12 @@
 {
-    "labels.itemsPerPage": "Intrari pe pagina",
+    "labels.itemsPerPage": "Intrări pe pagină",
     "labels.paginationLabelNormal": "{from}-{to} din {count}",
     "labels.paginationLabelOverflow": "{from}-{to} din mai mult de {to}",
     "labels.yes": "Da",
     "labels.no": "Nu",
-    "labels.actions": "Actiuni",
-    "labels.addUser": "Adauga utilizator",
-    "labels.addUserFile": "Adauga fisier",
+    "labels.actions": "Acțiuni",
+    "labels.addUser": "Adaugă Utilizator",
+    "labels.addUserFile": "Adaugă Fișier",
     "labels.addPet": "Adaugă Animal",
     "labels.editPet": "Modifică Animal",
     "labels.deletePet": "Șterge Animal",
@@ -35,8 +35,10 @@
     "labels.createProfile": "Creează Profilul",
     "labels.bio": "Descriere personală (Bio)",
     "labels.yearsExperience": "Ani de Experiență",
-    "labels.hourlyRate": "Tarif Orar ($)",
+    "labels.hourlyRate": "Tarif Orar",
     "labels.location": "Locație (Oraș, Județ)",
     "labels.rating": "Notă",
-    "labels.comment": "Comentariu"
+    "labels.comment": "Comentariu",
+    "labels.rateSymbol": "$",
+    "labels.deleteUser": "Șterge Utilizator"
 }

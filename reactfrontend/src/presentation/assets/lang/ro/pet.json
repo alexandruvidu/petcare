@@ -1,0 +1,17 @@
+{
+  "pet.name": "Nume Animal",
+  "pet.type": "Tip Animal",
+  "pet.breed": "Rasă",
+  "pet.age": "Vârstă",
+  "pet.year": "an",
+  "pet.years": "ani",
+  "pet.type.dog": "Câine",
+  "pet.type.cat": "Pisică",
+  "pet.type.bird": "Pasăre",
+  "pet.type.fish": "Pește",
+  "pet.type.rabbit": "Iepure",
+  "pet.type.hamster": "Hamster",
+  "pet.type.guineaPig": "Porcușor de Guineea",
+  "pet.type.reptile": "Reptilă",
+  "pet.type.other": "Altul"
+}

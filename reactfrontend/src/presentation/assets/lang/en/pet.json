@@ -1,0 +1,17 @@
+{
+  "pet.name": "Pet Name",
+  "pet.type": "Pet Type",
+  "pet.breed": "Breed",
+  "pet.age": "Age",
+  "pet.year": "year",
+  "pet.years": "years",
+  "pet.type.dog": "Dog",
+  "pet.type.cat": "Cat",
+  "pet.type.bird": "Bird",
+  "pet.type.fish": "Fish",
+  "pet.type.rabbit": "Rabbit",
+  "pet.type.hamster": "Hamster",
+  "pet.type.guineaPig": "Guinea Pig",
+  "pet.type.reptile": "Reptile",
+  "pet.type.other": "Other"
+}

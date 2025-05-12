@@ -1,0 +1,12 @@
+{
+  "success.profileUpdate": "Profil actualizat cu succes!",
+  "success.profileCreated": "Profil creat cu succes!",
+  "success.petAdded": "Animal adăugat cu succes!",
+  "success.petUpdated": "Animal actualizat cu succes!",
+  "success.petDeleted": "Animal șters cu succes!",
+  "success.bookingCreated": "Rezervare creată cu succes!",
+  "success.bookingUpdated": "Rezervare actualizată cu succes!",
+  "success.bookingDeleted": "Rezervare ștearsă cu succes!",
+  "success.reviewSubmitted": "Recenzie trimisă cu succes!",
+  "success.reviewUpdated": "Recenzie actualizată cu succes!"
+}

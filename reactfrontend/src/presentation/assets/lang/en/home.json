@@ -1,0 +1,20 @@
+{
+  "home.title": "PetCare | Home",
+  "home.hero.title": "Caring for your pets when you can't",
+  "home.hero.subtitle": "PetCare connects pet owners with trusted pet sitters in your area. Whether it's a day, a weekend, or longer - your pets will receive the care they deserve.",
+  "home.hero.getStarted": "Get Started",
+  "home.hero.learnMore": "Learn More",
+  "home.services.overline": "Our Services",
+  "home.services.title": "Everything your pet needs",
+  "home.services.subtitle": "From walks and feeding to overnight stays, our sitters provide the best care for your furry friends.",
+  "home.services.petSitting.title": "Pet Sitting",
+  "home.services.petSitting.description": "Our pet sitters can visit your home to feed, play with, and care for your pets while you're away.",
+  "home.services.boarding.title": "Boarding",
+  "home.services.boarding.description": "Your pet can stay at a sitter's home, receiving 24/7 attention and care in a safe environment.",
+  "home.services.dogWalking.title": "Dog Walking",
+  "home.services.dogWalking.description": "Regular walks keep your dog happy and healthy, providing exercise and mental stimulation.",
+  "home.cta.title": "Ready to find the perfect pet sitter?",
+  "home.cta.subtitle": "Join thousands of satisfied pet owners who trust PetCare with their furry, feathered, and scaly friends.",
+  "home.cta.signUp": "Sign up for free",
+  "footer.copyright": "© {year} PetCare. All rights reserved."
+}

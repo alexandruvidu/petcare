@@ -8,9 +8,11 @@
     "notifications.errors.cannotDelete": "Cannot delete data!",
     "notifications.errors.cannotUpdate": "Cannot update data!",
     "notifications.errors.entityNotFound": "The entity was not found!",
-    "notifications.errors.mailSendFailed": "The mail couldn't be send!",
+    "notifications.errors.mailSendFailed": "The mail couldn't be sent!",
     "notifications.errors.physicalFileNotFound": "The file was not found!",
-    "notifications.errors.technicalError": "A technical error occurred, please contact the support!",
+    "notifications.errors.technicalError": "A technical error occurred, please contact support!",
     "notifications.errors.userAlreadyExists": "The user already exists!",
-    "notifications.errors.wrongPassword": "You entered the wrong password!"
+    "notifications.errors.wrongPassword": "You entered the wrong password!",
+    "notifications.errors.registrationFailed": "Registration failed",
+    "notifications.messages.registrationSuccess": "Registration successful! Welcome to PetCare."
 }

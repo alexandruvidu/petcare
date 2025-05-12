@@ -1,5 +1,5 @@
 {
-    "nav.languageSelector.ro": "Romana",
+    "nav.languageSelector.ro": "Română",
     "nav.languageSelector.en": "English",
     "nav.home": "Acasă",
     "nav.about": "Despre",
@@ -11,5 +11,6 @@
     "nav.findSitters": "Găsește Sitters",
     "nav.profile": "Profil",
     "nav.myReviews": "Recenziile mele",
-    "nav.logout": "Deconectare"
+    "nav.logout": "Deconectare",
+    "nav.adminUsers": "Gestionare Utilizatori"
 }

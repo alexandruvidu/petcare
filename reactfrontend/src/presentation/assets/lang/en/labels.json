@@ -5,7 +5,7 @@
     "labels.yes": "Yes",
     "labels.no": "No",
     "labels.actions": "Actions",
-    "labels.addUser": "Add user",
+    "labels.addUser": "Add User",
     "labels.addUserFile": "Add file",
     "labels.addPet": "Add Pet",
     "labels.editPet": "Edit Pet",
@@ -35,8 +35,10 @@
     "labels.createProfile": "Create Profile",
     "labels.bio": "Bio",
     "labels.yearsExperience": "Years of Experience",
-    "labels.hourlyRate": "Hourly Rate ($)",
-    "labels.location": "Location (City, State)",
+    "labels.hourlyRate": "Hourly Rate",
+    "labels.location": "Location (City, State/County)",
     "labels.rating": "Rating",
-    "labels.comment": "Comment"
+    "labels.comment": "Comment",
+    "labels.rateSymbol": "$",
+    "labels.deleteUser": "Delete User"
 }
