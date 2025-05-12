@@ -1,4 +1,15 @@
 {
     "nav.languageSelector.ro": "Romana",
-    "nav.languageSelector.en": "English"
+    "nav.languageSelector.en": "English",
+    "nav.home": "Acasă",
+    "nav.about": "Despre",
+    "nav.login": "Autentificare",
+    "nav.register": "Înregistrare",
+    "nav.dashboard": "Panou de control",
+    "nav.myPets": "Animalele mele",
+    "nav.myBookings": "Rezervările mele",
+    "nav.findSitters": "Găsește Sitters",
+    "nav.profile": "Profil",
+    "nav.myReviews": "Recenziile mele",
+    "nav.logout": "Deconectare"
 }

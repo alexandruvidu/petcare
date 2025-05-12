@@ -1,30 +1,44 @@
-import { useTableController } from "../Table.controller";
 import { useGetUsers, useDeleteUser } from "@infrastructure/apis/api-management";
 import { useQueryClient } from "@tanstack/react-query";
-import { useCallback } from "react";
-import { usePaginationController } from "../Pagination.controller";
+import { useCallback, useState } from "react"; // Added useState for local pagination control
 
 /**
  * This is controller hook manages the table state including the pagination and data retrieval from the backend.
  */
 export const useUserTableController = () => {
-    const queryClient = useQueryClient(); // Get the query client.
-    const { page, pageSize, setPagination } = usePaginationController(); // Get the pagination state.
-    const { data, isError, isLoading, queryKey } = useGetUsers(page, pageSize); // Retrieve the table page from the backend via the query hook.
-    const { mutateAsync: remove } = useDeleteUser(); // Use a mutation to remove an entry.
+    const queryClient = useQueryClient();
+    const [page, setPage] = useState(0); // 0-indexed for MUI TablePagination
+    const [pageSize, setPageSize] = useState(10);
+    // Search term can be added here if needed for UserTable
+    // const [searchTerm, setSearchTerm] = useState("");
+    // const debouncedSearchTerm = useDebounce(searchTerm, 500);
+
+    // API uses 1-indexed page
+    const { data: usersDataResponse, isError, isLoading, queryKey: usersQueryKey } = useGetUsers(page + 1, pageSize /*, debouncedSearchTerm */);
+    const { mutateAsync: removeUserMutation } = useDeleteUser();
 
     const tryReload = useCallback(
-        () => queryClient.invalidateQueries({ queryKey: [queryKey] }),
-        [queryClient, queryKey]); // Create a callback to try reloading the data for the table via query invalidation.
+        () => queryClient.invalidateQueries({ queryKey: [usersQueryKey] }),
+        [queryClient, usersQueryKey]);
 
-    const tableController = useTableController(setPagination, data?.response?.pageSize); // Adapt the pagination for the table.
+    const handlePageChange = useCallback((newPage: number) => {
+        setPage(newPage);
+    }, []);
 
-    return { // Return the controller state and actions.
-        ...tableController,
+    const handlePageSizeChange = useCallback((newPageSize: number) => {
+        setPageSize(newPageSize);
+        setPage(0); // Reset to first page
+    }, []);
+
+    return {
+        page,
+        pageSize,
+        handlePageChange,
+        handlePageSizeChange,
         tryReload,
-        pagedData: data?.response,
+        pagedData: usersDataResponse?.response, // This is PagedResponse<UserDTO>
         isError,
         isLoading,
-        remove
+        removeUserMutation // Expose the mutation function itself
     };
 }

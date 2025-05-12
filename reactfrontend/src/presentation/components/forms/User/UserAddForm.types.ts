@@ -5,7 +5,8 @@ import {
     UseFormRegister,
     FieldErrorsImpl,
     DeepRequired,
-    UseFormWatch
+    UseFormWatch,
+    Control
 } from "react-hook-form";
 import { SelectChangeEvent } from "@mui/material";
 
@@ -13,7 +14,8 @@ export type UserAddFormModel = {
     name: string;
     email: string;
     password: string;
-    role: UserRoleEnum;
+    phone: string;
+    role: UserRoleEnum | ''; // Crucial: Allows '' for the placeholder in the Select
 };
 
 export type UserAddFormState = {
@@ -25,8 +27,10 @@ export type UserAddFormActions = {
     watch: UseFormWatch<UserAddFormModel>;
     handleSubmit: UseFormHandleSubmit<UserAddFormModel>;
     submit: (body: UserAddFormModel) => void;
-    selectRole: (value: SelectChangeEvent<UserRoleEnum>) => void;
+    selectRole: (event: SelectChangeEvent<UserRoleEnum | ''>) => void; // Event value can be ''
+    control: Control<UserAddFormModel>; // Make sure this is present
 };
+
 export type UserAddFormComputed = {
     defaultValues: UserAddFormModel,
     isSubmitting: boolean

@@ -12,8 +12,8 @@ import { ErrorCodes } from "@infrastructure/apis/client";
  */
 const getTranslationIdForKey = (code?: ErrorCodes) => {
     switch (code) {
-        case ErrorCodes.CannotAdd:
-            return { id: "notifications.errors.cannotAdd" };
+        // case ErrorCodes.CannotAdd:
+        //     return { id: "notifications.errors.cannotAdd" };
 
         case ErrorCodes.CannotDelete:
             return { id: "notifications.errors.cannotDelete" };
@@ -27,14 +27,11 @@ const getTranslationIdForKey = (code?: ErrorCodes) => {
         case ErrorCodes.MailSendFailed:
             return { id: "notifications.errors.mailSendFailed" };
 
-        case ErrorCodes.PhysicalFileNotFound:
-            return { id: "notifications.errors.physicalFileNotFound" };
-
         case ErrorCodes.TechnicalError:
             return { id: "notifications.errors.technicalError" };
 
-        case ErrorCodes.UserAlreadyExists:
-            return { id: "notifications.errors.userAlreadyExists" };
+        // case ErrorCodes.UserAlreadyExists:
+        //     return { id: "notifications.errors.userAlreadyExists" };
 
         case ErrorCodes.WrongPassword:
             return { id: "notifications.errors.wrongPassword" };

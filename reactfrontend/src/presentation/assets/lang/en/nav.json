@@ -1,4 +1,15 @@
 {
     "nav.languageSelector.ro": "Romana",
-    "nav.languageSelector.en": "English"
+    "nav.languageSelector.en": "English",
+    "nav.home": "Home",
+    "nav.about": "About",
+    "nav.login": "Login",
+    "nav.register": "Register",
+    "nav.dashboard": "Dashboard",
+    "nav.myPets": "My Pets",
+    "nav.myBookings": "My Bookings",
+    "nav.findSitters": "Find Sitters",
+    "nav.profile": "Profile",
+    "nav.myReviews": "My Reviews",
+    "nav.logout": "Logout"
 }

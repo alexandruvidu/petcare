@@ -1,6 +1,7 @@
 import { memo, PropsWithChildren } from "react";
-import { Navbar } from "./Navbar";
+import { Navbar } from "../Navbar"; // Updated path
 import { Box, Container, Typography } from "@mui/material";
+import { useIntl } from "react-intl";
 
 /**
  * This component should be used for all pages in the application,
@@ -9,6 +10,7 @@ import { Box, Container, Typography } from "@mui/material";
 export const WebsiteLayout = memo((props: PropsWithChildren<{}>) => {
     const { children } = props;
     const year = new Date().getFullYear();
+    const { formatMessage } = useIntl();
 
     return (
         <Box
@@ -20,7 +22,7 @@ export const WebsiteLayout = memo((props: PropsWithChildren<{}>) => {
         >
             <Navbar />
 
-            <Container component="main" sx={{ flexGrow: 1, py: 4, mb: 2 }}>
+            <Container component="main" sx={{ flexGrow: 1, py: {xs: 2, md: 4}, mb: 2 }}> {/* Adjusted padding */}
                 {children}
             </Container>
 
@@ -30,12 +32,15 @@ export const WebsiteLayout = memo((props: PropsWithChildren<{}>) => {
                     py: 3,
                     px: 2,
                     mt: 'auto',
-                    backgroundColor: 'grey.100',
+                    backgroundColor: (theme) =>
+                        theme.palette.mode === 'light'
+                            ? theme.palette.grey[200]
+                            : theme.palette.grey[800],
                     textAlign: 'center'
                 }}
             >
                 <Typography variant="body2" color="text.secondary">
-                    © {year} PetCare. All rights reserved.
+                    {formatMessage({id: "footer.copyright"}, { year: year})}
                 </Typography>
             </Box>
         </Box>

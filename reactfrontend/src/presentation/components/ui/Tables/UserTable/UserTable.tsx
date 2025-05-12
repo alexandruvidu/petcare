@@ -1,76 +1,115 @@
-import { useIntl } from "react-intl";
-import { isUndefined } from "lodash";
-import { IconButton, TablePagination } from "@mui/material";
+import React from 'react'; // Added React import
+import { useIntl, FormattedMessage } from "react-intl";
+import { Box, IconButton, Tooltip, Chip } from "@mui/material"; // Removed TablePagination, isUndefined
 import { DataLoadingContainer } from "../../LoadingDisplay";
 import { useUserTableController } from "./UserTable.controller";
-import { UserDTO } from "@infrastructure/apis/client";
+import { UserDTO, UserRoleEnum } from "@infrastructure/apis/client";
 import DeleteIcon from '@mui/icons-material/Delete';
 import { UserAddDialog } from "../../Dialogs/UserAddDialog";
 import { useAppSelector } from "@application/store";
-import {DataTable} from "@presentation/components/ui/Tables/DataTable";
+import { DataTable, DataTableColumn } from "@presentation/components/ui/Tables/DataTable/DataTable"; // Use new DataTable and types
+import { toast } from 'react-toastify'; // For notifications
 
-/**
- * This hook returns a header for the table with translated columns.
- */
-const useHeader = (): { key: keyof UserDTO, name: string, order: number }[] => {
-    const { formatMessage } = useIntl();
-
-    return [
-        { key: "name", name: formatMessage({ id: "globals.name" }), order: 1 },
-        { key: "email", name: formatMessage({ id: "globals.email" }), order: 2 },
-        { key: "role", name: formatMessage({ id: "globals.role" }), order: 3 }
-    ]
+const getRoleChipColor = (role: UserRoleEnum): "default" | "primary" | "secondary" | "error" | "info" | "success" | "warning" | undefined => {
+    switch (role) {
+        case UserRoleEnum.Admin: return "secondary";
+        case UserRoleEnum.Sitter: return "info";
+        case UserRoleEnum.Client: return "success";
+        default: return "default";
+    }
 };
 
-/**
- * The values in the table are organized as rows so this function takes the entries and creates the row values ordering them according to the order map.
- */
-const getRowValues = (entries: UserDTO[] | null | undefined, orderMap: { [key: string]: number }) =>
-    entries?.map(
-        entry => {
-            return {
-                entry: entry,
-                data: Object.entries(entry).filter(([e]) => !isUndefined(orderMap[e])).sort(([a], [b]) => orderMap[a] - orderMap[b]).map(([key, value]) => { return { key, value } })
-            }
-        });
-
-/**
- * Creates the user table.
- */
 export const UserTable = () => {
     const { userId: ownUserId } = useAppSelector(x => x.profileReducer);
     const { formatMessage } = useIntl();
-    const header = useHeader();
-    const { handleChangePage, handleChangePageSize, pagedData, isError, isLoading, tryReload, labelDisplay, remove } = useUserTableController(); // Use the controller hook.
+    const {
+        page,
+        pageSize,
+        handlePageChange,
+        handlePageSizeChange,
+        pagedData,
+        isError,
+        isLoading,
+        tryReload,
+        removeUserMutation
+    } = useUserTableController();
 
-    return <DataLoadingContainer isError={isError} isLoading={isLoading} tryReload={tryReload}> {/* Wrap the table into the loading container because data will be fetched from the backend and is not immediately available.*/}
-        <UserAddDialog /> {/* Add the button to open the user add modal. */}
-        {!isUndefined(pagedData) && !isUndefined(pagedData?.totalCount) && !isUndefined(pagedData?.page) && !isUndefined(pagedData?.pageSize) &&
-            <TablePagination // Use the table pagination to add the navigation between the table pages.
-                component="div"
-                count={pagedData.totalCount} // Set the entry count returned from the backend.
-                page={pagedData.totalCount !== 0 ? pagedData.page - 1 : 0} // Set the current page you are on.
-                onPageChange={handleChangePage} // Set the callback to change the current page.
-                rowsPerPage={pagedData.pageSize} // Set the current page size.
-                onRowsPerPageChange={handleChangePageSize} // Set the callback to change the current page size. 
-                labelRowsPerPage={formatMessage({ id: "labels.itemsPerPage" })}
-                labelDisplayedRows={labelDisplay}
-                showFirstButton
-                showLastButton
-            />}
+    const handleDelete = async (userId: string, userName: string) => {
+        if (userId === ownUserId) {
+            toast.error(formatMessage({ id: "admin.users.cannotDeleteSelf" }));
+            return;
+        }
+        // Here you would typically open a confirmation dialog first
+        // For brevity, directly calling delete. In a real app, use ConfirmationDialog.
+        try {
+            await removeUserMutation(userId);
+            toast.success(formatMessage({ id: 'admin.users.deleteSuccess' }, { userName }));
+            tryReload(); // Refetch data after deletion
+        } catch (e: any) {
+            const apiErrorMessage = e?.response?.data?.errorMessage?.message || e?.message;
+            toast.error(apiErrorMessage || formatMessage({ id: 'error.defaultApi' }));
+        }
+    };
 
-        <DataTable data={pagedData?.data ?? []}
-                   header={header}
-                   extraHeader={[{
-                       key: "actions",
-                       name: formatMessage({ id: "labels.actions" }),
-                       render: entry => <>
-                       {entry.id !== ownUserId && <IconButton color="error" onClick={() => remove(entry.id || '')}>
-                                                       <DeleteIcon color="error" fontSize='small' />
-                                                   </IconButton>
-                       }</>,
-                       order: 4
-                   }]}
-        />
-    </DataLoadingContainer >
-}
+    const columns: DataTableColumn<UserDTO>[] = [
+        { key: "name", name: formatMessage({ id: "globals.name" }) },
+        { key: "email", name: formatMessage({ id: "globals.email" }) },
+        { key: "phone", name: formatMessage({ id: "globals.phone" }) },
+        {
+            key: "role",
+            name: formatMessage({ id: "globals.role" }),
+            render: (value: UserRoleEnum) => (
+                <Chip
+                    label={formatMessage({ id: `globals.${value.toLowerCase()}` })}
+                    color={getRoleChipColor(value)}
+                    size="small"
+                />
+            )
+        },
+        {
+            key: "actions",
+            name: formatMessage({ id: "labels.actions" }),
+            align: 'right',
+            render: (_: any, entry: UserDTO) => ( // entry is UserDTO
+                <Box>
+                    <Tooltip title={formatMessage({ id: "labels.delete" })}>
+                        <span> {/* Tooltip on disabled button requires a span wrapper */}
+                            <IconButton
+                                color="error"
+                                size="small"
+                                onClick={() => handleDelete(entry.id, entry.name)}
+                                disabled={entry.id === ownUserId}
+                            >
+                                <DeleteIcon fontSize="small" />
+                            </IconButton>
+                        </span>
+                    </Tooltip>
+                    {/* Add Edit button/dialog if needed */}
+                </Box>
+            )
+        }
+    ];
+
+    const tableData = pagedData?.data || [];
+    const totalRowCount = pagedData?.totalCount || 0;
+
+    return (
+        <DataLoadingContainer isError={isError} isLoading={isLoading} tryReload={tryReload}>
+            {/* UserAddDialog can be placed outside DataTable or as a toolbarAction */}
+            {/* <UserAddDialog /> */}
+            <DataTable
+                columns={columns}
+                data={tableData}
+                totalCount={totalRowCount}
+                page={page}
+                pageSize={pageSize}
+                onPageChange={handlePageChange}
+                onPageSizeChange={handlePageSizeChange}
+                isLoading={isLoading}
+                noDataMessage={formatMessage({id: "admin.users.noUsers"})}
+                title={formatMessage({id: "admin.users.tableTitle"})} // i18n: admin.users.tableTitle
+                toolbarActions={<UserAddDialog />} // Example of adding it to the toolbar
+            />
+        </DataLoadingContainer>
+    );
+};

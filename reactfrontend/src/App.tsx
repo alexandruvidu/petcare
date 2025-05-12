@@ -1,10 +1,10 @@
 import { UserRoleEnum } from "@infrastructure/apis/client";
-import { useOwnUserHasRole } from "@infrastructure/hooks/useOwnUser";
+import { useTokenHasExpired } from "@infrastructure/hooks/useOwnUser";
 import { AppIntlProvider } from "@presentation/components/ui/AppIntlProvider";
 import { ToastNotifier } from "@presentation/components/ui/ToastNotifier";
 import { HomePage } from "@presentation/pages/HomePage";
 import { LoginPage } from "@presentation/pages/LoginPage";
-import { RegisterPage } from "@presentation/pages/RegisterPage";
+import { RegisterPage } from "@presentation/pages/RegisterPage"; // Corrected path assuming RegisterPage.tsx exists
 import { AboutPage } from "@presentation/pages/AboutPage";
 import { Route, Routes, Navigate } from "react-router-dom";
 import { AppRoute } from "routes";
@@ -19,11 +19,12 @@ import { SittersList } from "@presentation/pages/client/SittersList";
 import { SitterDashboard } from "@presentation/pages/sitter/SitterDashboard";
 import { SitterBookingsView } from "@presentation/pages/sitter/SitterBookingsView";
 import { SitterReviews } from "@presentation/pages/sitter/SitterReviews";
-import { PublicSitterReviews } from "@presentation/pages/sitter/PublicSitterReviews";
+import { PublicSitterReviews } from "@presentation/pages/sitter/PublicSitterReviews"; // Corrected path
 
 // Common Pages
 import { ProfilePage } from "@presentation/pages/profile/ProfilePage";
-import { SitterProfilePage } from "@presentation/pages/profile/SitterProfilePage";
+import { SitterProfilePage } from "@presentation/pages/profile/SitterProfilePage"; // Ensure this component is exported
+import { UsersPage } from "@presentation/pages/UsersPage";
 
 // Protected Route Component
 interface ProtectedRouteProps {
@@ -33,13 +34,17 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
     const { loggedIn, hasExpired } = useTokenHasExpired();
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const storedUser = localStorage.getItem('user');
+    const user = storedUser ? JSON.parse(storedUser) : {};
+    const userRole = user.role as UserRoleEnum | undefined;
 
-    if (!loggedIn || hasExpired) {
+    if (!loggedIn || hasExpired || !storedUser || !userRole) {
         return <Navigate to={AppRoute.Login} replace />;
     }
 
-    if (allowedRoles && !allowedRoles.includes(user.role as UserRoleEnum)) {
+    if (allowedRoles && !allowedRoles.includes(userRole)) {
+        if (userRole === UserRoleEnum.Client) return <Navigate to={AppRoute.ClientDashboard} replace />;
+        if (userRole === UserRoleEnum.Sitter) return <Navigate to={AppRoute.SitterDashboard} replace />;
         return <Navigate to={AppRoute.Index} replace />;
     }
 
@@ -47,9 +52,9 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
 };
 
 export function App() {
-    const isClient = useOwnUserHasRole(UserRoleEnum.Client);
-    const isSitter = useOwnUserHasRole(UserRoleEnum.Sitter);
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const storedUser = localStorage.getItem('user');
+    const user = storedUser ? JSON.parse(storedUser) : {};
+    const userRole = user.role as UserRoleEnum | undefined;
 
     return (
         <AppIntlProvider>
@@ -122,17 +127,27 @@ export function App() {
                     }
                 />
 
-                {/* Common Routes */}
+                {/* Common Protected Routes */}
                 <Route
                     path={AppRoute.Profile}
                     element={
                         <ProtectedRoute allowedRoles={[UserRoleEnum.Client, UserRoleEnum.Sitter]}>
-                            {user.role === UserRoleEnum.Sitter ? <SitterProfilePage /> : <ProfilePage />}
+                            {userRole === UserRoleEnum.Sitter ? <SitterProfilePage /> :
+                                userRole === UserRoleEnum.Client ? <ProfilePage /> :
+                                    <Navigate to={AppRoute.Index} replace />}
                         </ProtectedRoute>
                     }
                 />
 
-                {/* Redirect to home for any unmatched routes */}
+                {/* Admin Route */}
+                <Route
+                    path={AppRoute.Users}
+                    element={
+                        <ProtectedRoute allowedRoles={[UserRoleEnum.Admin]}>
+                            <UsersPage />
+                        </ProtectedRoute>
+                    }
+                />
                 <Route path="*" element={<Navigate to={AppRoute.Index} replace />} />
             </Routes>
         </AppIntlProvider>
