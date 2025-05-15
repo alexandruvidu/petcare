@@ -16,7 +16,7 @@ export const useAppRouter = () => {
   const redirectToUsers = useCallback(
     () =>
       navigate({
-        pathname: AppRoute.Users
+        pathname: AppRoute.AdminUsers
       }),
     [navigate]
   );
@@ -24,7 +24,7 @@ export const useAppRouter = () => {
   const redirectToUsersFiles = useCallback(
     () =>
       navigate({
-        pathname: AppRoute.Users
+        pathname: AppRoute.AdminUsers
       }),
     [navigate]
   );

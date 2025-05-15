@@ -1,0 +1,9 @@
+{
+  "feedback.dialogTitle": "Share Your Feedback",
+  "feedback.ratingLabel": "Overall Experience",
+  "feedback.commentLabel": "Your Comments",
+  "feedback.commentPlaceholder": "Tell us what you think...",
+  "feedback.submitButton": "Submit Feedback",
+  "feedback.success": "Thank you for your feedback!",
+  "feedback.error": "Could not submit feedback. Please try again."
+}

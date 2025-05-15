@@ -9,5 +9,7 @@
   "profile.sitter.professional.noProfile": "You haven't created your sitter profile yet. Fill out this section to make your profile visible to pet owners!",
   "profile.sitterProfessional.title": "Edit Sitter Profile",
   "profile.sitterProfessional.header": "Your Sitter Profile",
-  "profile.sitterProfessional.subtitle": "Manage your professional details that pet owners will see."
+  "profile.sitterProfessional.subtitle": "Manage your professional details that pet owners will see.",
+  "profile.admin.header": "Manage User Account",
+  "profile.admin.subtitle": "Update your personal information and password."
 }

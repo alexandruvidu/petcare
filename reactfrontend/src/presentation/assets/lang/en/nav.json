@@ -12,5 +12,10 @@
     "nav.profile": "Profile",
     "nav.myReviews": "My Reviews",
     "nav.logout": "Logout",
-    "nav.adminUsers": "Manage Users"
+    "nav.adminDashboard": "Admin Panel",
+    "nav.adminUsers": "Manage Users",
+    "nav.adminPets": "Manage Pets",
+    "nav.adminBookings": "Manage Bookings",
+    "nav.adminSitterProfiles": "Sitter Profiles",
+    "nav.adminReviews": "Manage Reviews"
 }

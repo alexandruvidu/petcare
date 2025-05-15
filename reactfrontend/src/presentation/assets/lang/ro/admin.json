@@ -8,5 +8,21 @@
   "admin.users.confirmDeleteUser": "Sigur doriți să ștergeți utilizatorul {userName}?",
   "admin.users.cannotDeleteSelf": "Nu vă puteți șterge propriul cont.",
   "admin.users.deleteSuccess": "Utilizatorul {userName} a fost șters cu succes.",
-  "admin.users.addSuccess": "Utilizatorul {userName} a fost adăugat cu succes."
+  "admin.users.addSuccess": "Utilizatorul {userName} a fost adăugat cu succes.",
+  "admin.pets.title": "Toate Animalele",
+  "admin.pets.header": "Management Animale",
+  "admin.pets.tableTitle": "Toate Animalele din Sistem",
+  "admin.pets.noPets": "Niciun animal găsit în sistem.",
+  "admin.bookings.title": "Toate Rezervările",
+  "admin.bookings.header": "Management Rezervări",
+  "admin.bookings.tableTitle": "Toate Rezervările din Sistem",
+  "admin.bookings.noBookings": "Nicio rezervare găsită în sistem.",
+  "admin.sitterProfiles.title": "Toate Profilurile Sitter",
+  "admin.sitterProfiles.header": "Management Profiluri Sitter",
+  "admin.sitterProfiles.tableTitle": "Toate Profilurile Sitter",
+  "admin.sitterProfiles.noProfiles": "Niciun profil de sitter găsit.",
+  "admin.reviews.title": "Toate Recenziile",
+  "admin.reviews.header": "Management Recenzii",
+  "admin.reviews.tableTitle": "Toate Recenziile din Sistem",
+  "admin.reviews.noReviews": "Nicio recenzie găsită în sistem."
 }

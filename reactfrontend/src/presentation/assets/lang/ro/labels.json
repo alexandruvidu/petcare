@@ -40,5 +40,7 @@
     "labels.rating": "Notă",
     "labels.comment": "Comentariu",
     "labels.rateSymbol": "$",
-    "labels.deleteUser": "Șterge Utilizator"
+    "labels.search": "Caută...",
+    "labels.deleteUser": "Șterge Utilizator",
+    "labels.confirm": "Confirmă"
 }

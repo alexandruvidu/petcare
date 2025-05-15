@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react'; // Added useEffect
 import {
     Box,
     Typography,
@@ -7,47 +7,45 @@ import {
     Grid,
     Card,
     Avatar,
-    Paper // Used instead of Card for CTA for slight visual difference
+    Paper
 } from '@mui/material';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom'; // Added useNavigate
 import { WebsiteLayout } from '@presentation/layouts/WebsiteLayout';
 import { useIntl, FormattedMessage } from 'react-intl';
 import { AppRoute } from 'routes';
 import { Seo } from '@presentation/components/ui/Seo';
 import PetsIcon from '@mui/icons-material/Pets';
-import MessageIcon from '@mui/icons-material/Message'; // Trust & Transparency
-import PublicIcon from '@mui/icons-material/Public';   // Community
-import FlashOnIcon from '@mui/icons-material/FlashOn'; // Innovation
-
-// i18n keys to add:
-// about.title: "PetCare | About Us"
-// about.hero.title: "About PetCare"
-// about.hero.subtitle: "Our mission is to make pet care easy, accessible, and worry-free for all pet owners."
-// about.story.title: "Our Story"
-// about.story.p1: "PetCare was founded in 2023 by a group of passionate pet owners who recognized the challenges of finding reliable pet care. We understood the anxiety that comes with leaving your beloved pets in someone else's hands."
-// about.story.p2: "What started as a small community of pet lovers has grown into a comprehensive platform connecting thousands of pet owners with trusted pet sitters across the country."
-// about.story.p3: "Our team consists of veterinarians, animal behaviorists, and technology experts all working together to create the best experience for pets and their owners."
-// about.values.overline: "Our Values"
-// about.values.title: "What We Believe In"
-// about.values.subtitle: "Our core values guide everything we do at PetCare, from how we build our platform to how we interact with our community."
-// about.values.safety.title: "Pet Safety & Wellbeing"
-// about.values.safety.description: "We prioritize the safety, health, and happiness of all pets in our care. Every decision we make puts pets first."
-// about.values.trust.title: "Trust & Transparency"
-// about.values.trust.description: "We believe in building trust through transparency. From our verification process to our review system, we ensure pet owners can make informed decisions."
-// about.values.community.title: "Community"
-// about.values.community.description: "We're building more than a service - we're creating a community of pet lovers who share knowledge, experiences, and a passion for animals."
-// about.values.innovation.title: "Innovation"
-// about.values.innovation.description: "We continuously improve our platform and services based on user feedback and emerging technologies to provide the best experience for pets and their owners."
-// about.cta.title: "Ready to join our community?"
-// about.cta.subtitle: "Start using PetCare today."
-// about.cta.getStarted: "Get started"
-// about.cta.giveFeedback: "Give feedback" (Assuming a feedback page exists or link to contact)
+import MessageIcon from '@mui/icons-material/Message';
+import PublicIcon from '@mui/icons-material/Public';
+import FlashOnIcon from '@mui/icons-material/FlashOn';
+import { useTokenHasExpired } from '@infrastructure/hooks/useOwnUser'; // Added
+import { useAppSelector } from '@application/store'; // Added
+import { UserRoleEnum } from '@infrastructure/apis/client'; // Added
 
 const heroImage = "https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80";
 const teamImage = "https://images.unsplash.com/photo-1534361960057-19889db9621e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80";
 
 export const AboutPage = () => {
     const { formatMessage } = useIntl();
+    const navigate = useNavigate();
+    const { loggedIn } = useTokenHasExpired();
+    const { role } = useAppSelector(state => state.profileReducer);
+
+    useEffect(() => {
+        if (loggedIn) {
+            if (role === UserRoleEnum.Client) {
+                navigate(AppRoute.ClientDashboard, { replace: true });
+            } else if (role === UserRoleEnum.Sitter) {
+                navigate(AppRoute.SitterDashboard, { replace: true });
+            } else if (role === UserRoleEnum.Admin) {
+                navigate(AppRoute.AdminUsers, { replace: true }); // Or a specific AdminDashboard route
+            }
+        }
+    }, [loggedIn, role, navigate]);
+
+    if (loggedIn) { // Render nothing while redirecting
+        return null;
+    }
 
     const values = [
         { icon: <PetsIcon />, titleId: "about.values.safety.title", descriptionId: "about.values.safety.description" },
@@ -84,7 +82,7 @@ export const AboutPage = () => {
                         sx={{
                             position: 'absolute',
                             top: 0, left: 0, width: '100%', height: '100%',
-                            backgroundColor: 'rgba(0, 0, 0, 0.6)', // Darker overlay for better text contrast
+                            backgroundColor: 'rgba(0, 0, 0, 0.6)',
                             borderRadius: 'inherit'
                         }}
                     />
@@ -127,7 +125,7 @@ export const AboutPage = () => {
                 </Container>
 
                 {/* Our Values */}
-                <Box sx={{ bgcolor: 'grey.100', py: 8, mb: 8 }}> {/* Adjusted background color */}
+                <Box sx={{ bgcolor: 'grey.100', py: 8, mb: 8 }}>
                     <Container maxWidth="lg">
                         <Box sx={{ textAlign: 'center', mb: 6 }}>
                             <Typography variant="overline" color="primary.main" fontWeight="bold">
@@ -171,7 +169,7 @@ export const AboutPage = () => {
                                 <Typography variant="h4" component="h3" fontWeight="bold" gutterBottom>
                                     <FormattedMessage id="about.cta.title" />
                                 </Typography>
-                                <Typography variant="h6" color="primary.main" gutterBottom> {/* h5 in petcare, h6 here */}
+                                <Typography variant="h6" color="primary.main" gutterBottom>
                                     <FormattedMessage id="about.cta.subtitle" />
                                 </Typography>
                             </Grid>
@@ -186,10 +184,9 @@ export const AboutPage = () => {
                                     >
                                         <FormattedMessage id="about.cta.getStarted" />
                                     </Button>
-                                    {/* Assuming a feedback route/page or link to contact */}
                                     <Button
                                         component={RouterLink}
-                                        to={AppRoute.Index} // Placeholder, change to actual feedback route
+                                        to={AppRoute.Index}
                                         variant="outlined"
                                         size="large"
                                         color="primary"

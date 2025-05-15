@@ -6,8 +6,9 @@ import { HomePage } from "@presentation/pages/HomePage";
 import { LoginPage } from "@presentation/pages/LoginPage";
 import { RegisterPage } from "@presentation/pages/RegisterPage";
 import { AboutPage } from "@presentation/pages/AboutPage";
-import { Route, Routes, Navigate } from "react-router-dom";
+import { Route, Routes, Navigate, useLocation } from "react-router-dom";
 import { AppRoute } from "routes";
+import { useEffect, useState } from "react";
 
 // Client Pages
 import { ClientDashboard } from "@presentation/pages/client/ClientDashboard";
@@ -23,8 +24,11 @@ import { PublicSitterReviews } from "@presentation/pages/sitter/PublicSitterRevi
 
 // Common Pages
 import { ProfilePage } from "@presentation/pages/profile/ProfilePage";
-import { SitterProfilePage } from "@presentation/pages/profile/SitterProfilePage"; // This now handles tabs
-import { UsersPage } from "@presentation/pages/UsersPage";
+import { SitterProfilePage } from "@presentation/pages/profile/SitterProfilePage";
+
+// Admin Pages
+import { UsersPage as AdminUsersPage } from "@presentation/pages/UsersPage";
+
 
 // Protected Route Component
 interface ProtectedRouteProps {
@@ -45,17 +49,59 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
     if (allowedRoles && !allowedRoles.includes(userRole)) {
         if (userRole === UserRoleEnum.Client) return <Navigate to={AppRoute.ClientDashboard} replace />;
         if (userRole === UserRoleEnum.Sitter) return <Navigate to={AppRoute.SitterDashboard} replace />;
+        if (userRole === UserRoleEnum.Admin) return <Navigate to={AppRoute.AdminUsers} replace />
         return <Navigate to={AppRoute.Index} replace />;
     }
 
     return <>{children}</>;
 };
 
-export function App() {
-    const storedUser = localStorage.getItem('user');
-    const user = storedUser ? JSON.parse(storedUser) : {};
-    const userRole = user.role as UserRoleEnum | undefined;
+const DynamicProfileRouter = () => {
+    const [userRole, setUserRole] = useState<UserRoleEnum | undefined>(undefined);
+    const [isLoading, setIsLoading] = useState(true);
+    const location = useLocation();
 
+    useEffect(() => {
+        const checkUserRole = () => {
+            const storedUser = localStorage.getItem('user');
+            if (storedUser) {
+                try {
+                    const userData = JSON.parse(storedUser);
+                    setUserRole(userData.role as UserRoleEnum);
+                } catch (e) {
+                    console.error("Error parsing user data:", e);
+                    setUserRole(undefined);
+                }
+            } else {
+                setUserRole(undefined);
+            }
+            setIsLoading(false);
+        };
+
+        checkUserRole();
+        window.addEventListener('storage', checkUserRole);
+        window.addEventListener('login', checkUserRole);
+
+        return () => {
+            window.removeEventListener('storage', checkUserRole);
+            window.removeEventListener('login', checkUserRole);
+        };
+    }, [location.pathname]);
+
+    if (isLoading) {
+        return null;
+    }
+
+    if (userRole === UserRoleEnum.Sitter) {
+        return <SitterProfilePage key="sitter-profile" />;
+    } else if (userRole === UserRoleEnum.Client || userRole === UserRoleEnum.Admin) {
+        return <ProfilePage key="client-admin-profile" />;
+    }
+
+    return <Navigate to={AppRoute.Index} replace />;
+};
+
+export function App() {
     return (
         <AppIntlProvider>
             <ToastNotifier />
@@ -127,27 +173,27 @@ export function App() {
                     }
                 />
 
-                {/* Common Protected Routes */}
+                {/* Common Protected Route */}
                 <Route
                     path={AppRoute.Profile}
                     element={
-                        <ProtectedRoute allowedRoles={[UserRoleEnum.Client, UserRoleEnum.Sitter, UserRoleEnum.Admin]}> {/* Added Admin */}
-                            {userRole === UserRoleEnum.Sitter ? <SitterProfilePage /> : /* Use the updated SitterProfilePage */
-                                (userRole === UserRoleEnum.Client || userRole === UserRoleEnum.Admin) ? <ProfilePage /> :
-                                    <Navigate to={AppRoute.Index} replace />}
+                        <ProtectedRoute allowedRoles={[UserRoleEnum.Client, UserRoleEnum.Sitter, UserRoleEnum.Admin]}>
+                            <DynamicProfileRouter />
                         </ProtectedRoute>
                     }
                 />
 
-                {/* Admin Route */}
+                {/* Admin Routes */}
                 <Route
-                    path={AppRoute.Users}
+                    path={AppRoute.AdminUsers}
                     element={
                         <ProtectedRoute allowedRoles={[UserRoleEnum.Admin]}>
-                            <UsersPage />
+                            <AdminUsersPage />
                         </ProtectedRoute>
                     }
                 />
+
+                {/* Fallback */}
                 <Route path="*" element={<Navigate to={AppRoute.Index} replace />} />
             </Routes>
         </AppIntlProvider>

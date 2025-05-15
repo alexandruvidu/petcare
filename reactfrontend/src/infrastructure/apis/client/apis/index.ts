@@ -6,3 +6,4 @@ export * from './PetApi';
 export * from './ReviewApi';
 export * from './SitterProfileApi';
 export * from './UserApi';
+export * from './FeedbackAPI';

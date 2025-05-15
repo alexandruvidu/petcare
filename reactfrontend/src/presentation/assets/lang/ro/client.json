@@ -42,5 +42,7 @@
   "client.sitters.details.noReviews": "Nicio recenzie încă pentru acest sitter.",
   "client.sitters.bookNow": "Rezervă Acum",
   "client.sitters.noPetsToBook": "Trebuie să adaugi un animal la profilul tău înainte de a putea face o rezervare.",
+  "client.bookings.searchPlaceholder": "Caută după animal, sitter, status sau notițe...",
+  "client.pets.searchPlaceholder": "Caută animale după nume, tip sau rasă...",
   "client.sitters.selectSitterPrompt": "Selectează un sitter din listă pentru a vedea detaliile."
 }

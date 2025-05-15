@@ -8,6 +8,7 @@ export * from './BookingStatusEnum';
 export * from './BookingUpdateDTO';
 export * from './ErrorCodes';
 export * from './ErrorMessage';
+export * from './FeedbackAddDTO';
 export * from './HttpStatusCode';
 export * from './LoginDTO';
 export * from './LoginResponseDTO';

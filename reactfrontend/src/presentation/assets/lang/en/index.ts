@@ -17,6 +17,8 @@ import buttons from "./buttons.json"; // Added
 import success from "./success.json"; // Added
 import error from "./error.json"; // Added
 import viewMode from "./viewMode.json"; // Added
+import footer from "./footer.json"; // Added
+import feedback from "./feedback.json"; // Added
 
 export default {
     ...notifications,
@@ -37,5 +39,7 @@ export default {
     ...buttons,
     ...success,
     ...error,
-    ...viewMode
+    ...viewMode,
+    ...footer,
+    ...feedback
 };

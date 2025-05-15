@@ -9,5 +9,7 @@
   "profile.sitter.professional.noProfile": "Nu ți-ai creat încă profilul de sitter. Completează această secțiune pentru a-ți face profilul vizibil proprietarilor de animale!",
   "profile.sitterProfessional.title": "Editează Profilul de Sitter",
   "profile.sitterProfessional.header": "Profilul Tău de Sitter",
-  "profile.sitterProfessional.subtitle": "Gestionează detaliile profesionale pe care le vor vedea proprietarii de animale."
+  "profile.sitterProfessional.subtitle": "Gestionează detaliile profesionale pe care le vor vedea proprietarii de animale.",
+  "profile.admin.header": "Gestionează Contul Utilizatorului",
+  "profile.admin.subtitle": "Actualizează informațiile personale și parola."
 }

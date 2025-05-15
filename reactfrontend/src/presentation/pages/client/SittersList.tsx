@@ -3,8 +3,8 @@ import { WebsiteLayout } from "@presentation/layouts/WebsiteLayout";
 import { Seo } from "@presentation/components/ui/Seo";
 import { useIntl, FormattedMessage } from 'react-intl';
 import { Container, Typography, Box, Grid, Card, CardContent, CardActions, Button, TextField, Avatar, Rating, Pagination, Modal, Paper, CircularProgress, Chip } from '@mui/material';
-import { useGetAllSitters, useGetSitterProfileById, useGetReviewsForSitter, useGetMyPets } from '@infrastructure/apis/api-management'; // useCreateBooking is in BookingForm controller
-import { UserDTO, SitterProfileDTO, ReviewDTO, PetDTO, UserRoleEnum } from '@infrastructure/apis/client';
+import { useGetAllSitters, useGetMyPets } from '@infrastructure/apis/api-management';
+import { UserDTO, SitterProfileDTO, ReviewDTO, PetDTO, UserRoleEnum, Configuration, SitterProfileApi, ReviewApi } from '@infrastructure/apis/client';
 import { DataLoadingContainer } from '@presentation/components/ui/LoadingDisplay';
 import { Link as RouterLink } from 'react-router-dom';
 import { AppRoute } from 'routes';
@@ -13,7 +13,10 @@ import WorkHistoryIcon from '@mui/icons-material/WorkHistory';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import { BookingForm } from '@presentation/components/forms/Booking/BookingForm';
 import { toast } from 'react-toastify';
-import { BookingAddFormModel } from '@presentation/components/forms/Booking/BookingForm.types'; // For initialData typing
+import { BookingAddFormModel } from '@presentation/components/forms/Booking/BookingForm.types';
+import { useQueryClient } from '@tanstack/react-query';
+import { useAppSelector } from '@application/store';
+
 
 const modalStyle = {
     position: 'absolute' as 'absolute',
@@ -52,37 +55,58 @@ export const SittersList: React.FC = () => {
 
     const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
 
+    const queryClient = useQueryClient();
+    const { token } = useAppSelector(x => x.profileReducer);
+
     useEffect(() => {
-        if (sittersData?.response) {
-            const fetchDetails = async () => {
-                const detailedSittersPromises = sittersData.response!.map(async (sitter) => {
+        if (sittersData?.response && token) {
+            const fetchDetailsForAllSitters = async () => {
+                const detailedSittersPromises = sittersData.response!.map(async (sitterUser) => {
                     let profile: SitterProfileDTO | undefined;
                     let avgRating: number | undefined;
                     let reviewCount: number | undefined;
-                    try {
-                        // These hooks are called inside the map, which is generally an anti-pattern for hooks.
-                        // A better approach would be to fetch these in the parent or have a dedicated component.
-                        // For now, to make it work with refetch, we'll proceed, but be mindful of this.
-                        const profileRes = await useGetSitterProfileById(sitter.id).refetch();
-                        if (profileRes.data?.response) profile = profileRes.data.response;
 
-                        const reviewsRes = await useGetReviewsForSitter(sitter.id).refetch();
-                        if (reviewsRes.data?.response) {
-                            const reviews = reviewsRes.data.response;
+                    try {
+                        const profileDataResponse = await queryClient.fetchQuery({
+                            queryKey: ["getSitterProfileByIdQuery", token, sitterUser.id],
+                            queryFn: () => new SitterProfileApi(new Configuration({ accessToken: token! })).apiSitterProfileGetSitterIdGet({ sitterId: sitterUser.id })
+                        });
+                        if (profileDataResponse?.response) profile = profileDataResponse.response;
+
+                        const reviewsDataResponse = await queryClient.fetchQuery({
+                            queryKey: ["getReviewsForSitterQuery", token, sitterUser.id],
+                            queryFn: () => new ReviewApi(new Configuration({ accessToken: token! })).apiReviewGetForSitterSitterIdGet({ sitterId: sitterUser.id })
+                        });
+
+                        if (reviewsDataResponse?.response) {
+                            const reviews = reviewsDataResponse.response;
                             reviewCount = reviews.length;
                             avgRating = reviews.length > 0 ? reviews.reduce((acc, r) => acc + (r.rating || 0), 0) / reviews.length : 0;
                         }
-                    } catch (e) { console.error(`Error fetching details for sitter ${sitter.id}`, e); }
-                    return { ...sitter, profile, avgRating, reviewCount };
+                    } catch (e) {
+                        console.error(`Error fetching details for sitter ${sitterUser.id}:`, e);
+                    }
+                    return { ...sitterUser, profile, avgRating, reviewCount };
                 });
-                const detailedSitters = await Promise.all(detailedSittersPromises);
-                const sittersWithCompleteProfiles = detailedSitters.filter(s => s.profile);
-                setAllSitters(sittersWithCompleteProfiles);
-                setFilteredSitters(sittersWithCompleteProfiles);
+
+                try {
+                    const detailedSitters = await Promise.all(detailedSittersPromises);
+                    const sittersWithCompleteProfiles = detailedSitters.filter(s => s.profile);
+                    setAllSitters(sittersWithCompleteProfiles);
+                    setFilteredSitters(sittersWithCompleteProfiles);
+                } catch (overallError) {
+                    console.error("Error fetching details for all sitters:", overallError);
+                    setAllSitters([]);
+                    setFilteredSitters([]);
+                }
             };
-            fetchDetails();
+            fetchDetailsForAllSitters();
+        } else if (!token && sittersData?.response) {
+            setAllSitters([]);
+            setFilteredSitters([]);
         }
-    }, [sittersData]);
+    }, [sittersData, token, queryClient]);
+
 
     useEffect(() => {
         const lowerSearchTerm = searchTerm.toLowerCase();
@@ -97,15 +121,19 @@ export const SittersList: React.FC = () => {
     const handleSelectSitter = async (sitter: SitterWithDetails) => {
         setSelectedSitter(sitter);
         setSelectedSitterProfile(sitter.profile || null);
-        if (sitter.id) {
+        if (sitter.id && token) {
             try {
-                // Similarly, calling refetch from a hook here is not ideal.
-                // Consider passing the hook itself or its data to a sub-component.
-                const reviewsRes = await useGetReviewsForSitter(sitter.id).refetch();
-                setSelectedSitterReviews(reviewsRes.data?.response || []);
+                const reviewsRes = await queryClient.fetchQuery({
+                    queryKey: ["getReviewsForSitterQuery", token, sitter.id],
+                    queryFn: () => new ReviewApi(new Configuration({ accessToken: token! })).apiReviewGetForSitterSitterIdGet({ sitterId: sitter.id })
+                });
+                setSelectedSitterReviews(reviewsRes?.response || []);
             } catch (e) {
+                console.error(`Error fetching reviews for selected sitter ${sitter.id}:`, e);
                 setSelectedSitterReviews([]);
             }
+        } else {
+            setSelectedSitterReviews([]);
         }
     };
 
@@ -144,7 +172,7 @@ export const SittersList: React.FC = () => {
                     />
                     <Grid container spacing={3}>
                         <Grid item xs={12} md={selectedSitter ? 7 : 12}>
-                            <DataLoadingContainer isLoading={isLoadingSitters} isError={isErrorSitters} tryReload={refetchSitters}>
+                            <DataLoadingContainer isLoading={isLoadingSitters && allSitters.length === 0} isError={isErrorSitters} tryReload={refetchSitters}> {/* Adjust isLoading condition */}
                                 {currentTableData.length > 0 ? (
                                     <Grid container spacing={2}>
                                         {currentTableData.map(sitter => (
@@ -161,7 +189,7 @@ export const SittersList: React.FC = () => {
                                                 >
                                                     <CardContent sx={{ flexGrow: 1 }}>
                                                         <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                                                            <Avatar sx={{ bgcolor: 'primary.light', mr: 2, width: 56, height: 56 }}>{sitter.name?.[0]}</Avatar>
+                                                            <Avatar sx={{ bgcolor: 'primary.main', mr: 2, width: 56, height: 56 }}>{sitter.name?.[0]}</Avatar>
                                                             <Box>
                                                                 <Typography variant="h6">{sitter.name}</Typography>
                                                                 {sitter.profile?.location && <Typography variant="body2" color="text.secondary" sx={{display: 'flex', alignItems: 'center'}}><LocationOnIcon fontSize="inherit" sx={{mr:0.5}}/> {sitter.profile.location}</Typography>}
@@ -175,8 +203,8 @@ export const SittersList: React.FC = () => {
                                                                 </Typography>
                                                             </Box>
                                                         )}
-                                                        {sitter.profile?.hourlyRate && <Chip label={`${formatMessage({id: "labels.rateSymbol"})}${sitter.profile.hourlyRate} ${formatMessage({id: "client.sitters.hourly"})}`} size="small" icon={<AttachMoneyIcon />} sx={{mr:1, mt:1}}/>}
-                                                        {sitter.profile?.yearsExperience !== undefined && <Chip label={`${sitter.profile.yearsExperience} ${formatMessage({id: "client.sitters.years"})}`} size="small" icon={<WorkHistoryIcon />} sx={{mt:1}}/>}
+                                                        {sitter.profile?.hourlyRate != null && <Chip label={`${formatMessage({id: "labels.rateSymbol"})}${sitter.profile.hourlyRate} ${formatMessage({id: "client.sitters.hourly"})}`} size="small" icon={<AttachMoneyIcon />} sx={{mr:1, mt:1}}/>}
+                                                        {sitter.profile?.yearsExperience != null && <Chip label={`${sitter.profile.yearsExperience} ${formatMessage({id: "client.sitters.years"})}`} size="small" icon={<WorkHistoryIcon />} sx={{mt:1}}/>}
                                                     </CardContent>
                                                     <CardActions sx={{justifyContent: 'flex-end'}}>
                                                         <Button size="small" variant='outlined' onClick={(e) => { e.stopPropagation(); handleSelectSitter(sitter);}}>
@@ -199,9 +227,9 @@ export const SittersList: React.FC = () => {
                         </Grid>
                         {selectedSitter && (
                             <Grid item xs={12} md={5}>
-                                <Paper elevation={3} sx={{ p: 3, position: 'sticky', top: (theme) => theme.spacing(10) }}>
+                                <Paper elevation={3} sx={{ p: 3, position: 'sticky', top: (theme) => theme.spacing(10) }}> {/* Increased top spacing */}
                                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                                        <Avatar sx={{ bgcolor: 'secondary.main', mr: 2, width: 64, height: 64, fontSize: '2rem' }}>{selectedSitter.name?.[0]}</Avatar>
+                                        <Avatar sx={{ bgcolor: 'primary.main', mr: 2, width: 64, height: 64, fontSize: '2rem' }}>{selectedSitter.name?.[0]}</Avatar>
                                         <Box>
                                             <Typography variant="h5">{selectedSitter.name}</Typography>
                                             {selectedSitter.avgRating !== undefined && (
@@ -217,7 +245,7 @@ export const SittersList: React.FC = () => {
                                     {selectedSitterProfile ? (
                                         <>
                                             <Typography variant="subtitle1" gutterBottom fontWeight="bold"><FormattedMessage id="client.sitters.details.bio" /></Typography>
-                                            <Typography variant="body2" paragraph sx={{maxHeight: 100, overflowY: 'auto', mb:2}}>{selectedSitterProfile.bio}</Typography>
+                                            <Typography variant="body2" paragraph sx={{maxHeight: 100, overflowY: 'auto', mb:2, whiteSpace: 'pre-wrap'}}>{selectedSitterProfile.bio}</Typography>
 
                                             <Grid container spacing={1} sx={{mb:2}}>
                                                 <Grid item xs={6}><Typography variant="body2"><strong><FormattedMessage id="client.sitters.details.experience" />:</strong> {selectedSitterProfile.yearsExperience} {formatMessage({id: "client.sitters.years"})}</Typography></Grid>
@@ -232,7 +260,7 @@ export const SittersList: React.FC = () => {
                                                         <Box key={review.id} sx={{mb:1, pb:1, borderBottom: 1, borderColor: 'divider', '&:last-child': {borderBottom:0, mb:0, pb:0}}}>
                                                             <Rating value={review.rating} size="small" readOnly/>
                                                             <Typography variant="caption" display="block" color="text.secondary">{review.reviewerName} - {new Date(review.date).toLocaleDateString()}</Typography>
-                                                            <Typography variant="body2" sx={{mt:0.5}}>{review.comment}</Typography>
+                                                            <Typography variant="body2" sx={{mt:0.5, whiteSpace: 'pre-wrap'}}>{review.comment}</Typography>
                                                         </Box>
                                                     )}
                                                 </Box>
@@ -242,13 +270,13 @@ export const SittersList: React.FC = () => {
                                                 <FormattedMessage id="client.sitters.bookNow" />
                                             </Button>
                                         </>
-                                    ) : <CircularProgress /> }
+                                    ) : <Box sx={{display:'flex', justifyContent:'center', my:2}}><CircularProgress /></Box> }
                                 </Paper>
                             </Grid>
                         )}
                         {!selectedSitter && !isLoadingSitters && filteredSitters.length > 0 && (
-                            <Grid item xs={12} md={5}>
-                                <Paper elevation={1} sx={{ p: 3, textAlign: 'center', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <Grid item xs={12} md={5}> {/* Ensure this grid item is present */}
+                                <Paper elevation={1} sx={{ p: 3, textAlign: 'center', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius:2 }}>
                                     <Typography color="text.secondary"><FormattedMessage id="client.sitters.selectSitterPrompt" /></Typography>
                                 </Paper>
                             </Grid>
@@ -259,14 +287,13 @@ export const SittersList: React.FC = () => {
             <Modal open={isBookingModalOpen} onClose={handleCloseBookingModal}>
                 <Paper sx={modalStyle}>
                     <BookingForm
-                        isEdit={false} // This is for creating a new booking
+                        isEdit={false}
                         onSubmitSuccess={() => {
                             handleCloseBookingModal();
-                            toast.success(formatMessage({id: "success.bookingCreated"}));
                         }}
                         userRole={UserRoleEnum.Client}
                         availablePets={petsData?.response || []}
-                        initialData={{ sitterId: selectedSitter?.id || "" } as Partial<BookingAddFormModel>} // Pass sitterId for pre-fill
+                        initialData={{ sitterId: selectedSitter?.id || "" } as Partial<BookingAddFormModel>}
                     />
                 </Paper>
             </Modal>

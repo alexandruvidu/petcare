@@ -40,5 +40,19 @@
     "labels.rating": "Rating",
     "labels.comment": "Comment",
     "labels.rateSymbol": "$",
-    "labels.deleteUser": "Delete User"
+    "labels.search": "Search...",
+    "labels.deleteUser": "Delete User",
+    "labels.confirm": "Confirm",
+    "admin.pets.title": "All Pets",
+    "admin.pets.header": "Pet Management",
+    "admin.pets.noPets": "No pets found in the system.",
+    "admin.bookings.title": "All Bookings",
+    "admin.bookings.header": "Booking Management",
+    "admin.bookings.noBookings": "No bookings found in the system.",
+    "admin.sitterProfiles.title": "All Sitter Profiles",
+    "admin.sitterProfiles.header": "Sitter Profile Management",
+    "admin.sitterProfiles.noProfiles": "No sitter profiles found.",
+    "admin.reviews.title": "All Reviews",
+    "admin.reviews.header": "Review Management",
+    "admin.reviews.noReviews": "No reviews found in the system."
 }

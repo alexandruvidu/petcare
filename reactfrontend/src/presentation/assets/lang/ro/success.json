@@ -8,5 +8,6 @@
   "success.bookingUpdated": "Rezervare actualizată cu succes!",
   "success.bookingDeleted": "Rezervare ștearsă cu succes!",
   "success.reviewSubmitted": "Recenzie trimisă cu succes!",
-  "success.reviewUpdated": "Recenzie actualizată cu succes!"
+  "success.reviewUpdated": "Recenzie actualizată cu succes!",
+  "success.reviewDeleted": "Recenzie ștearsă cu succes!"
 }

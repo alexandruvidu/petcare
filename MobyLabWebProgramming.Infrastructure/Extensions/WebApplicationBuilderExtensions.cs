@@ -189,7 +189,8 @@ public static class WebApplicationBuilderExtensions
             .AddScoped<IPetService, PetService>()
             .AddScoped<IBookingService, BookingService>()
             .AddScoped<IReviewService, ReviewService>()
-            .AddScoped<ISitterProfileService, SitterProfileService>();
+            .AddScoped<ISitterProfileService, SitterProfileService>()
+            .AddScoped<IFeedbackService, FeedbackService>();
 
         return builder;
     }

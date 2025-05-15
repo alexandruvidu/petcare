@@ -2,7 +2,7 @@ import React, { Fragment, useEffect, useState } from 'react';
 import { WebsiteLayout } from "@presentation/layouts/WebsiteLayout";
 import { Seo } from "@presentation/components/ui/Seo";
 import { useIntl, FormattedMessage } from 'react-intl';
-import { Container, Typography, Grid, Paper, Box, Button, Alert } from '@mui/material'; // Added Alert
+import { Container, Typography, Grid, Paper, Box, Button, Alert, CircularProgress } from '@mui/material'; // Added CircularProgress
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { AppRoute } from 'routes';
 import EventNoteIcon from '@mui/icons-material/EventNote';
@@ -10,7 +10,7 @@ import StarIcon from '@mui/icons-material/Star';
 import PersonIcon from '@mui/icons-material/Person';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import { useGetMyBookings, useGetReviewsForSitter, useGetMySitterProfile } from '@infrastructure/apis/api-management';
-import { BookingDTO, BookingStatusEnum } from '@infrastructure/apis/client'; // UserRoleEnum removed as not directly used here
+import { BookingDTO, BookingStatusEnum } from '@infrastructure/apis/client';
 import { DataLoadingContainer } from '@presentation/components/ui/LoadingDisplay';
 
 
@@ -76,13 +76,16 @@ export const SitterDashboard: React.FC = () => {
     const { data: reviewsData, isLoading: isLoadingReviews, isError: isErrorReviews, refetch: refetchReviews } = useGetReviewsForSitter(user.id);
     const { data: profileData, isLoading: isLoadingProfile, isError: isErrorProfile, refetch: refetchProfile } = useGetMySitterProfile();
 
-    // profileComplete will be true if profileData.response exists and has a bio (or any other significant field)
-    // and we are not currently loading the profile.
-    const profileComplete = !isLoadingProfile && !!profileData?.response?.bio;
+    const profileComplete = !!profileData?.response?.bio;
 
-    const isLoading = isLoadingBookings || isLoadingReviews || isLoadingProfile;
-    const isError = isErrorBookings || isErrorReviews || isErrorProfile;
-    const refetchAll = () => { refetchBookings(); refetchReviews(); refetchProfile(); }
+    const isLoadingStats = isLoadingBookings || isLoadingReviews;
+    const isErrorStats = isErrorBookings || isErrorReviews;
+
+    const refetchAllData = () => {
+        refetchBookings();
+        refetchReviews();
+        refetchProfile();
+    }
 
     const activeBookings = bookingsData?.response?.filter(b => b.status === BookingStatusEnum.Accepted && new Date(b.endDate) >= new Date()).length || 0;
     const pendingBookings = bookingsData?.response?.filter(b => b.status === BookingStatusEnum.Pending).length || 0;
@@ -94,8 +97,8 @@ export const SitterDashboard: React.FC = () => {
         ? (reviewsData!.response!.reduce((sum, review) => sum + (review.rating || 0), 0) / reviewCount).toFixed(1)
         : "0.0";
 
-    const goToProfilePage = () => { // Renamed for clarity, SitterProfilePage is now the target
-        navigate(AppRoute.Profile); // Navigates to /profile, App.tsx handles which component
+    const goToProfilePageWithProfessionalTab = () => {
+        navigate(AppRoute.Profile, { state: { defaultTab: 'professional' } });
     };
 
     return (
@@ -110,11 +113,16 @@ export const SitterDashboard: React.FC = () => {
                         <FormattedMessage id="sitter.dashboard.subtitle" />
                     </Typography>
 
-                    {/* Show profile prompt only if profile loading is done and profile is not complete */}
-                    {!isLoadingProfile && !isErrorProfile && !profileComplete && (
-                        <Alert severity="warning" sx={{p:2, my:3, }}
+                    {/* Profile Completion Alert placeholder or actual alert */}
+                    {isLoadingProfile ? (
+                        <Paper sx={{p:2, my:3, display: 'flex', alignItems: 'center', justifyContent: 'flex-start', backgroundColor: 'action.hover', borderRadius: 1 }}>
+                            <CircularProgress size={20} sx={{mr: 2}}/>
+                            <Typography color="text.secondary">Checking profile status...</Typography> {/* TODO: Add i18n for this */}
+                        </Paper>
+                    ) : !profileComplete ? ( // Only show if loading is done and profile is not complete
+                        <Alert severity="warning" sx={{p:2, my:3 }}
                                action={
-                                   <Button color="inherit" size="small" onClick={goToProfilePage}>
+                                   <Button color="inherit" size="small" onClick={goToProfilePageWithProfessionalTab}>
                                        <FormattedMessage id="sitter.dashboard.profilePrompt.button" />
                                    </Button>
                                }
@@ -122,10 +130,10 @@ export const SitterDashboard: React.FC = () => {
                             <Typography fontWeight="medium"><FormattedMessage id="sitter.dashboard.profilePrompt.title" /></Typography>
                             <FormattedMessage id="sitter.dashboard.profilePrompt.subtitle" />
                         </Alert>
-                    )}
+                    ) : null}
 
 
-                    <DataLoadingContainer isLoading={isLoading} isError={isError} tryReload={refetchAll}>
+                    <DataLoadingContainer isLoading={isLoadingStats} isError={isErrorStats} tryReload={refetchAllData}>
                         <Grid container spacing={3} sx={{ mt: 2, mb: 4 }}>
                             <StatCard
                                 title={formatMessage({id: "sitter.dashboard.stats.activeBookings"})}
@@ -174,7 +182,7 @@ export const SitterDashboard: React.FC = () => {
                                 title={formatMessage({id: "sitter.dashboard.quickActions.updateProfile.title"})}
                                 subtitle={formatMessage({id: "sitter.dashboard.quickActions.updateProfile.subtitle"})}
                                 icon={<PersonIcon />}
-                                onClick={goToProfilePage}
+                                onClick={goToProfilePageWithProfessionalTab}
                             />
                             <QuickActionCard
                                 title={formatMessage({id: "sitter.dashboard.quickActions.viewReviews.title"})}

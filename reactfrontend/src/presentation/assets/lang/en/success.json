@@ -8,5 +8,6 @@
   "success.bookingUpdated": "Booking updated successfully!",
   "success.bookingDeleted": "Booking deleted successfully!",
   "success.reviewSubmitted": "Review submitted successfully!",
-  "success.reviewUpdated": "Review updated successfully!"
+  "success.reviewUpdated": "Review updated successfully!",
+  "success.reviewDeleted": "Review deleted successfully!"
 }

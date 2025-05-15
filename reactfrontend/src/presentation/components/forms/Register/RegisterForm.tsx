@@ -1,28 +1,29 @@
+import React from 'react'; // Ensure React is imported
 import {
     Button,
     CircularProgress,
-    FormControl,
-    FormHelperText,
-    InputLabel,
     Grid,
     Box,
-    TextField, // Using TextField for consistency and better label integration
-    Select,
-    MenuItem,
-    Typography
+    TextField,
+    Typography,
+    Paper,
+    FormHelperText
 } from "@mui/material";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useRegisterFormController } from "./RegisterForm.controller";
-import { isEmpty } from "lodash"; // isUndefined might not be needed if errors are checked directly
 import { UserRoleEnum } from "@infrastructure/apis/client";
 import { Controller } from "react-hook-form";
+import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
+import SupervisedUserCircleIcon from '@mui/icons-material/SupervisedUserCircle';
 
 export const RegisterForm = () => {
     const { formatMessage } = useIntl();
     const { state, actions, computed } = useRegisterFormController();
 
+    const selectedRole = actions.control._formValues.role;
+
     return (
-        <Box component="form" onSubmit={actions.handleSubmit(actions.submit)} sx={{ mt: 1, width: '100%' }}> {/* Removed noValidate to let yup handle it */}
+        <Box component="form" onSubmit={actions.handleSubmit(actions.submit)} sx={{ mt: 1, width: '100%' }}>
             <Grid container spacing={2}>
                 <Grid item xs={12}>
                     <Controller
@@ -122,38 +123,49 @@ export const RegisterForm = () => {
                         )}
                     />
                 </Grid>
-                <Grid item xs={12}>
-                    <FormControl fullWidth error={!!state.errors.role} required>
-                        <InputLabel id="role-select-label">
-                            <FormattedMessage id="labels.accountType" />
-                        </InputLabel>
-                        <Controller
-                            name="role"
-                            control={actions.control}
-                            defaultValue="" // Default to empty string for placeholder
-                            render={({ field }) => (
-                                <Select
-                                    labelId="role-select-label"
-                                    id="role"
-                                    label={<FormattedMessage id="labels.accountType" />}
-                                    {...field}
-                                >
-                                    <MenuItem value="" disabled>
-                                        <Typography color="textSecondary">
-                                            <FormattedMessage id="globals.placeholders.selectInput" values={{ fieldName: formatMessage({ id: "labels.accountType" })}} />
-                                        </Typography>
-                                    </MenuItem>
-                                    <MenuItem value={UserRoleEnum.Client}>
-                                        <FormattedMessage id="labels.petOwner" />
-                                    </MenuItem>
-                                    <MenuItem value={UserRoleEnum.Sitter}>
-                                        <FormattedMessage id="labels.petSitter" />
-                                    </MenuItem>
-                                </Select>
-                            )}
-                        />
-                        {state.errors.role && <FormHelperText>{state.errors.role?.message}</FormHelperText>}
-                    </FormControl>
+
+                {/* Role Selection Buttons */}
+                <Grid item xs={12} sx={{ mt: 1 }}>
+                    <Typography variant="subtitle1" gutterBottom sx={{textAlign: 'center', mb: 1.5}}>
+                        <FormattedMessage id="labels.accountType" />*
+                    </Typography>
+                    <Controller
+                        name="role"
+                        control={actions.control}
+                        defaultValue=""
+                        render={() => <React.Fragment /> } //  Return an empty Fragment
+                    />
+                    <Grid container spacing={2} justifyContent="center">
+                        <Grid item xs={12} sm={6}>
+                            <Button
+                                fullWidth
+                                variant={selectedRole === UserRoleEnum.Client ? "contained" : "outlined"}
+                                onClick={() => actions.setValue('role', UserRoleEnum.Client, { shouldValidate: true })}
+                                sx={{ py: 2, height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}
+                                color={selectedRole === UserRoleEnum.Client ? "primary" : "inherit"}
+                            >
+                                <PersonOutlineIcon sx={{ fontSize: 40 }} />
+                                <Typography variant="button"><FormattedMessage id="labels.petOwner" /></Typography>
+                            </Button>
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <Button
+                                fullWidth
+                                variant={selectedRole === UserRoleEnum.Sitter ? "contained" : "outlined"}
+                                onClick={() => actions.setValue('role', UserRoleEnum.Sitter, { shouldValidate: true })}
+                                sx={{ py: 2, height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}
+                                color={selectedRole === UserRoleEnum.Sitter ? "primary" : "inherit"}
+                            >
+                                <SupervisedUserCircleIcon sx={{ fontSize: 40 }} />
+                                <Typography variant="button"><FormattedMessage id="labels.petSitter" /></Typography>
+                            </Button>
+                        </Grid>
+                    </Grid>
+                    {state.errors.role && (
+                        <FormHelperText error sx={{ textAlign: 'center', mt: 1 }}>
+                            {state.errors.role.message}
+                        </FormHelperText>
+                    )}
                 </Grid>
             </Grid>
             <Button
@@ -161,7 +173,7 @@ export const RegisterForm = () => {
                 fullWidth
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
-                disabled={computed.isSubmitting} // Removed !isEmpty(state.errors) as yup will prevent submission
+                disabled={computed.isSubmitting}
             >
                 {computed.isSubmitting ? <CircularProgress size={24} /> : <FormattedMessage id="register.submitButton" />}
             </Button>

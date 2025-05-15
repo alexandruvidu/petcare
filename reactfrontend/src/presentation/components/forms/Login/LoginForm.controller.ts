@@ -94,7 +94,7 @@ export const useLoginFormController = (): LoginFormController => {
                             navigate(AppRoute.SitterDashboard);
                             break;
                         case UserRoleEnum.Admin:
-                            navigate(AppRoute.Users); // Or a dedicated Admin Dashboard
+                            navigate(AppRoute.AdminUsers); // Or a dedicated Admin Dashboard
                             break;
                         default:
                             navigate(AppRoute.Index);

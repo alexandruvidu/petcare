@@ -12,5 +12,10 @@
     "nav.profile": "Profil",
     "nav.myReviews": "Recenziile mele",
     "nav.logout": "Deconectare",
-    "nav.adminUsers": "Gestionare Utilizatori"
+    "nav.adminDashboard": "Panou Admin",
+    "nav.adminUsers": "Gestionare Utilizatori",
+    "nav.adminPets": "Gestionare Animale",
+    "nav.adminBookings": "Gestionare Rezervări",
+    "nav.adminSitterProfiles": "Profiluri Sitter",
+    "nav.adminReviews": "Gestionare Recenzii"
 }

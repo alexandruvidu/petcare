@@ -1,12 +1,12 @@
-import React, { Fragment, useState, useEffect } from 'react';
+import React, { Fragment, useState } from 'react'; // Removed useEffect as filtering moves to DataTable
 import { WebsiteLayout } from "@presentation/layouts/WebsiteLayout";
 import { Seo } from "@presentation/components/ui/Seo";
 import { useIntl, FormattedMessage } from 'react-intl';
-import { Container, Typography, Box, IconButton, Button, Modal, Paper, Tooltip, Chip } from '@mui/material';
-import { useGetMyBookings, useDeleteBooking, useGetMyPets, useGetAllSitters } from '@infrastructure/apis/api-management';
+import { Container, Typography, Box, IconButton, Button, Modal, Paper, Tooltip, Chip } from '@mui/material'; // Removed TextField
+import { useGetMyBookings, useDeleteBooking, useGetMyPets } from '@infrastructure/apis/api-management';
 import { DataLoadingContainer } from '@presentation/components/ui/LoadingDisplay';
 import { DataTable, DataTableColumn } from '@presentation/components/ui/Tables/DataTable/DataTable';
-import { BookingDTO, BookingStatusEnum, PetDTO, UserDTO, UserRoleEnum } from '@infrastructure/apis/client';
+import { BookingDTO, BookingStatusEnum, UserRoleEnum } from '@infrastructure/apis/client';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
@@ -18,7 +18,7 @@ import { toast } from 'react-toastify';
 import { dateToDatetimeString } from '@infrastructure/utils/dateUtils';
 import { useNavigate } from 'react-router-dom';
 import { AppRoute } from 'routes';
-import { BookingAddFormModel } from '@presentation/components/forms/Booking/BookingForm.types'; // For initialData typing
+// Removed useDebounce
 
 const modalStyle = {
     position: 'absolute' as 'absolute',
@@ -49,16 +49,12 @@ export const ClientBookingsTable: React.FC = () => {
     const navigate = useNavigate();
     const { data: bookingsDataResponse, isLoading, isError, refetch } = useGetMyBookings();
     const { mutateAsync: deleteBookingMutation } = useDeleteBooking();
-
     const { data: petsData } = useGetMyPets();
-    // const { data: sittersData } = useGetAllSitters(); // Not strictly needed for displaying client's bookings table
 
     const [isFormModalOpen, setIsFormModalOpen] = useState(false);
     const [editingBooking, setEditingBooking] = useState<BookingDTO | undefined>(undefined);
-
     const [bookingToDelete, setBookingToDelete] = useState<BookingDTO | null>(null);
     const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
-
     const [detailBooking, setDetailBooking] = useState<BookingDTO | null>(null);
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
@@ -102,38 +98,35 @@ export const ClientBookingsTable: React.FC = () => {
 
     const getBookingStatusLabel = (status: BookingStatusEnum): string => {
         switch (status) {
-            case BookingStatusEnum.Pending:
-                return formatMessage({ id: "booking.status.pending" });
-            case BookingStatusEnum.Accepted:
-                return formatMessage({ id: "booking.status.accepted" });
-            case BookingStatusEnum.Rejected:
-                return formatMessage({ id: "booking.status.rejected" });
-            case BookingStatusEnum.Completed:
-                return formatMessage({ id: "booking.status.completed" });
-            default:
-                const exhaustiveCheck: never = status;
-                return String(exhaustiveCheck);
+            case BookingStatusEnum.Pending: return formatMessage({ id: "booking.status.pending" });
+            case BookingStatusEnum.Accepted: return formatMessage({ id: "booking.status.accepted" });
+            case BookingStatusEnum.Rejected: return formatMessage({ id: "booking.status.rejected" });
+            case BookingStatusEnum.Completed: return formatMessage({ id: "booking.status.completed" });
+            default: const exhaustiveCheck: never = status; return String(exhaustiveCheck);
         }
     };
 
     const columns: DataTableColumn<BookingDTO>[] = [
-        { key: 'petName', name: formatMessage({ id: 'pet.name' }), render: (val, entry) => entry.petName || "N/A" },
-        { key: 'sitterName', name: formatMessage({ id: 'globals.sitter' }), render: (val, entry) => entry.sitterName || "N/A"},
+        { key: 'petName', name: formatMessage({ id: 'pet.name' }), render: (val, entry) => entry.petName || "N/A", searchable: true },
+        { key: 'sitterName', name: formatMessage({ id: 'globals.sitter' }), render: (val, entry) => entry.sitterName || "N/A", searchable: true},
         { key: 'startDate', name: formatMessage({ id: 'booking.startDate' }), render: (value: Date) => dateToDatetimeString(new Date(value)) },
         { key: 'endDate', name: formatMessage({ id: 'booking.endDate' }), render: (value: Date) => dateToDatetimeString(new Date(value)) },
         {
             key: 'status',
             name: formatMessage({ id: 'booking.status' }),
             render: (value: BookingStatusEnum) => (
-                <Chip
-                    label={getBookingStatusLabel(value)} // CORRECTED: Use helper function
-                    color={getStatusChipColor(value)}
-                    size="small"
-                />
-            )
+                <Chip label={getBookingStatusLabel(value)} color={getStatusChipColor(value)} size="small" />
+            ),
+            // searchable: true // To search by status text, you'd need a way for DataTable to use the rendered text
         },
-        { // New actions column for ClientBookingsTable
-            key: 'actions_client_bookings', // Unique key
+        {
+            key: 'notes', // Assuming notes might be searchable
+            name: formatMessage({id: 'booking.notes'}),
+            render: (value: string) => value && value.length > 30 ? `${value.substring(0,27)}...` : value,
+            searchable: true
+        },
+        {
+            key: 'actions_client_bookings',
             name: formatMessage({ id: 'labels.actions' }),
             align: 'right',
             render: (_, entry: BookingDTO) => (
@@ -162,38 +155,36 @@ export const ClientBookingsTable: React.FC = () => {
         }
     ];
 
-    const bookings = bookingsDataResponse?.response || [];
+    const allBookings = bookingsDataResponse?.response || [];
 
     return (
         <Fragment>
             <Seo title={formatMessage({ id: 'client.bookings.title' })} />
             <WebsiteLayout>
                 <Container maxWidth="lg">
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                        <Typography variant="h4" component="h1">
-                            <FormattedMessage id="nav.myBookings" />
-                        </Typography>
-                        <Button
-                            variant="contained"
-                            startIcon={<AddCircleOutlineIcon />}
-                            onClick={() => navigate(AppRoute.Sitters)}
-                        >
-                            <FormattedMessage id="client.bookings.newBooking" />
-                        </Button>
-                    </Box>
                     <DataLoadingContainer isLoading={isLoading} isError={isError} tryReload={refetch}>
                         <DataTable
                             columns={columns}
-                            data={bookings}
-                            totalCount={bookings.length}
+                            data={allBookings} // Pass full dataset
                             page={page}
                             pageSize={pageSize}
                             onPageChange={setPage}
                             onPageSizeChange={(newPageSize) => { setPageSize(newPageSize); setPage(0); }}
                             isLoading={isLoading}
                             noDataMessage={formatMessage({id: "client.bookings.noBookings"})}
-                            title={formatMessage({id: "client.bookings.listTitle"})}
-                            // No toolbarActions needed here as the Add button is separate for this page
+                            title={formatMessage({id: "nav.myBookings"})}
+                            toolbarActions={
+                                <Button
+                                    variant="contained"
+                                    startIcon={<AddCircleOutlineIcon />}
+                                    onClick={() => navigate(AppRoute.Sitters)}
+                                >
+                                    <FormattedMessage id="client.bookings.newBooking" />
+                                </Button>
+                            }
+                            enableSearch={true}
+                            searchPlaceholder={formatMessage({ id: 'client.bookings.searchPlaceholder' })}
+                            serverSideOperations={false}
                         />
                     </DataLoadingContainer>
                 </Container>
@@ -202,12 +193,11 @@ export const ClientBookingsTable: React.FC = () => {
             <Modal open={isFormModalOpen} onClose={handleCloseFormModal}>
                 <Paper sx={modalStyle}>
                     <BookingForm
-                        isEdit={true} // Client is editing specific parts of an existing booking
+                        isEdit={true}
                         initialData={editingBooking}
                         onSubmitSuccess={handleCloseFormModal}
                         userRole={UserRoleEnum.Client}
-                        availablePets={petsData?.response || []} // Needed if form allows changing pet, otherwise optional
-                        // availableSitters={sittersData?.response || []} // Not needed when client edits their own booking details
+                        availablePets={petsData?.response || []}
                     />
                 </Paper>
             </Modal>

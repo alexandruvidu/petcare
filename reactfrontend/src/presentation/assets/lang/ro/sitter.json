@@ -36,5 +36,6 @@
   "publicReviews.overallRating": "Rating General",
   "sitter.bioPlaceholder": "Spune-le proprietarilor de animale despre tine, experiența ta cu animalele și abordarea ta în îngrijirea lor (ex: tipuri de animale cu care ești confortabil, servicii oferite, o zi tipică).",
   "sitter.locationPlaceholder": "Oraș, Județ (ex: București, Sector 1)",
+  "sitter.bookings.searchPlaceholder": "Caută după animal, client, status sau notițe...",
   "sitter.profile.formSubtitle": "Aceste informații vor fi afișate proprietarilor de animale atunci când caută sitteri. Fă-le să strălucească!"
 }

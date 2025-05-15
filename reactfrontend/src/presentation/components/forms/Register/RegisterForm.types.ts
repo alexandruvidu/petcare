@@ -5,10 +5,11 @@ import {
     UseFormRegister,
     FieldErrorsImpl,
     DeepRequired,
-    UseFormWatch,
-    Control
+    UseFormWatch, // Keep watch if you need to observe changes outside of render
+    Control,
+    UseFormSetValue // Added UseFormSetValue
 } from "react-hook-form";
-import { SelectChangeEvent } from "@mui/material";
+// SelectChangeEvent is no longer needed for role
 
 export interface RegisterFormModel {
     name: string;
@@ -16,7 +17,7 @@ export interface RegisterFormModel {
     phone: string;
     password: string;
     confirmPassword: string;
-    role: UserRoleEnum | ''; // Allow empty for placeholder
+    role: UserRoleEnum | ''; // Allow empty for placeholder/no selection
 }
 
 export interface RegisterFormState {
@@ -27,7 +28,8 @@ export interface RegisterFormActions {
     register: UseFormRegister<RegisterFormModel>;
     handleSubmit: UseFormHandleSubmit<RegisterFormModel>;
     submit: (body: RegisterFormModel) => void;
-    control: Control<RegisterFormModel>; // For controlled MUI components like Select
+    control: Control<RegisterFormModel>;
+    setValue: UseFormSetValue<RegisterFormModel>; // Add setValue
 }
 export interface RegisterFormComputed {
     defaultValues: RegisterFormModel,

@@ -36,5 +36,6 @@
   "publicReviews.overallRating": "Overall Rating",
   "sitter.bioPlaceholder": "Tell pet owners about yourself, your experience with animals, and your pet care approach (e.g., types of pets you're comfortable with, services you offer, typical day).",
   "sitter.locationPlaceholder": "City, State/County (e.g., San Francisco, CA)",
+  "sitter.bookings.searchPlaceholder": "Search by pet, client, status, or notes...",
   "sitter.profile.formSubtitle": "This information will be displayed to pet owners when they search for sitters. Make it shine!"
 }

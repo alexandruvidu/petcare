@@ -7,7 +7,7 @@ import { useRegister } from "@infrastructure/apis/api-management";
 import { useCallback } from "react";
 import { UserRoleEnum, ErrorCodes } from "@infrastructure/apis/client";
 import { useAppDispatch } from "@application/store";
-import { setLoginData } from "@application/state-slices"; // Use setLoginData as it handles both token and user
+import { setLoginData } from "@application/state-slices";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { AppRoute } from "routes";
@@ -19,7 +19,7 @@ const getDefaultValues = (initialData?: Partial<RegisterFormModel>): RegisterFor
         phone: "",
         password: "",
         confirmPassword: "",
-        role: '' // Default to empty string for placeholder in Select
+        role: '' // Default to empty string for no initial selection
     };
     return { ...defaultValues, ...initialData };
 };
@@ -46,12 +46,12 @@ const useInitRegisterFormSchema = () => {
             .oneOf([yup.ref('password')], formatMessage({ id: "globals.validations.passwordsDoNotMatch" }))
             .required(formatMessage({ id: "globals.validations.requiredField" }, { fieldName: formatMessage({ id: "globals.confirmPassword" }) })),
         role: yup.mixed<AllowedRegistrationRole | ''>()
-            .oneOf([...allowedRegistrationRoles, ''], formatMessage({id: "validation.invalidRole"}))
-            .required(formatMessage({ id: "globals.validations.requiredField" }, { fieldName: formatMessage({ id: "labels.accountType" }) }))
-            .test(
+            .oneOf([...allowedRegistrationRoles, ''], formatMessage({id: "validation.invalidRole"})) // Allow '' temporarily
+            .required(formatMessage({ id: "globals.validations.requiredField" }, { fieldName: formatMessage({ id: "labels.accountType" }) })) // Ensure it's not undefined/null
+            .test( // Custom test to ensure it's not an empty string after 'required'
                 "role-not-empty",
                 formatMessage({ id: "globals.validations.requiredField" }, { fieldName: formatMessage({ id: "labels.accountType" }) }),
-                value => value !== ''
+                value => value !== '' // Must not be empty string
             )
     });
 
@@ -71,6 +71,7 @@ export const useRegisterFormController = (): RegisterFormController => {
         register,
         handleSubmit,
         control,
+        setValue, // Added setValue
         formState: { errors }
     } = useForm<RegisterFormModel>({
         defaultValues,
@@ -79,6 +80,8 @@ export const useRegisterFormController = (): RegisterFormController => {
 
     const submit = useCallback(async (data: RegisterFormModel) => {
         if (!data.role || (data.role !== UserRoleEnum.Client && data.role !== UserRoleEnum.Sitter)) {
+            // This check should ideally be caught by Yup, but good as a fallback.
+            errors.role = { type: 'manual', message: formatMessage({ id: "globals.validations.requiredField" }, { fieldName: formatMessage({ id: "labels.accountType" }) }) };
             toast.error(formatMessage({ id: "globals.validations.requiredField" }, { fieldName: formatMessage({ id: "labels.accountType" }) }));
             return;
         }
@@ -87,15 +90,13 @@ export const useRegisterFormController = (): RegisterFormController => {
             email: data.email,
             password: data.password,
             phone: data.phone,
-            role: data.role as UserRoleEnum
+            role: data.role as UserRoleEnum // Safe to cast after validation
         };
         try {
             const result = await registerUser(apiData);
             if (result.response?.token && result.response?.user) {
-                // Use setLoginData as it correctly updates all necessary profile state including user DTO
                 dispatch(setLoginData({ token: result.response.token, user: result.response.user }));
-
-                window.dispatchEvent(new Event('login')); // Or 'registerSuccess'
+                window.dispatchEvent(new Event('login'));
                 toast.success(formatMessage({ id: "notifications.messages.registrationSuccess" }));
 
                 if (result.response.user.role === UserRoleEnum.Client) {
@@ -116,10 +117,10 @@ export const useRegisterFormController = (): RegisterFormController => {
             const specificError = apiErrorMessage?.code === ErrorCodes.AlreadyExists ? formatMessage({id: "notifications.errors.userAlreadyExists"}) : apiErrorMessage?.message || error?.message;
             toast.error(specificError || formatMessage({ id: "notifications.errors.registrationFailed" }));
         }
-    }, [registerUser, dispatch, navigate, formatMessage]);
+    }, [registerUser, dispatch, navigate, formatMessage, errors]); // Added errors to dependency array
 
     return {
-        actions: { handleSubmit, submit, register, control },
+        actions: { handleSubmit, submit, register, control, setValue }, // Added setValue
         computed: { defaultValues, isSubmitting: status === "pending" },
         state: { errors }
     }

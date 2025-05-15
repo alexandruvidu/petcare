@@ -1,0 +1,9 @@
+{
+  "feedback.dialogTitle": "Împărtășește Feedback-ul Tău",
+  "feedback.ratingLabel": "Experiență Generală",
+  "feedback.commentLabel": "Comentariile Tale",
+  "feedback.commentPlaceholder": "Spune-ne ce crezi...",
+  "feedback.submitButton": "Trimite Feedback",
+  "feedback.success": "Mulțumim pentru feedback!",
+  "feedback.error": "Feedback-ul nu a putut fi trimis. Te rugăm să încerci din nou."
+}

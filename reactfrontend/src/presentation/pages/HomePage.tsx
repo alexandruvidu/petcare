@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react'; // Added useEffect
 import {
     Box,
     Typography,
@@ -11,40 +11,43 @@ import {
     useMediaQuery,
     Paper
 } from '@mui/material';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom'; // Added useNavigate
 import { WebsiteLayout } from '@presentation/layouts/WebsiteLayout';
 import { useIntl, FormattedMessage } from 'react-intl';
 import { AppRoute } from 'routes';
 import PetsIcon from '@mui/icons-material/Pets';
-import HomeIcon from '@mui/icons-material/Home'; // Represents Boarding
-import DirectionsRunIcon from '@mui/icons-material/DirectionsRun'; // Represents Dog Walking
+import HomeIcon from '@mui/icons-material/Home';
+import DirectionsRunIcon from '@mui/icons-material/DirectionsRun';
 import { Seo } from '@presentation/components/ui/Seo';
-
-// i18n keys to add:
-// home.title: "PetCare | Home"
-// home.hero.title: "Caring for your pets when you can't"
-// home.hero.subtitle: "PetCare connects pet owners with trusted pet sitters in your area. Whether it's a day, a weekend, or longer - your pets will receive the care they deserve."
-// home.hero.getStarted: "Get Started"
-// home.hero.learnMore: "Learn More"
-// home.services.overline: "Our Services"
-// home.services.title: "Everything your pet needs"
-// home.services.subtitle: "From walks and feeding to overnight stays, our sitters provide the best care for your furry friends."
-// home.services.petSitting.title: "Pet Sitting"
-// home.services.petSitting.description: "Our pet sitters can visit your home to feed, play with, and care for your pets while you're away."
-// home.services.boarding.title: "Boarding"
-// home.services.boarding.description: "Your pet can stay at a sitter's home, receiving 24/7 attention and care in a safe environment."
-// home.services.dogWalking.title: "Dog Walking"
-// home.services.dogWalking.description: "Regular walks keep your dog happy and healthy, providing exercise and mental stimulation."
-// home.cta.title: "Ready to find the perfect pet sitter?"
-// home.cta.subtitle: "Join thousands of satisfied pet owners who trust PetCare with their furry, feathered, and scaly friends."
-// home.cta.signUp: "Sign up for free"
+import { useTokenHasExpired } from '@infrastructure/hooks/useOwnUser'; // Added
+import { useAppSelector } from '@application/store'; // Added
+import { UserRoleEnum } from '@infrastructure/apis/client'; // Added
 
 export const HomePage = () => {
     const { formatMessage } = useIntl();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-
     const heroImage = "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80";
+
+    const navigate = useNavigate();
+    const { loggedIn } = useTokenHasExpired();
+    const { role } = useAppSelector(state => state.profileReducer);
+
+    useEffect(() => {
+        if (loggedIn) {
+            if (role === UserRoleEnum.Client) {
+                navigate(AppRoute.ClientDashboard, { replace: true });
+            } else if (role === UserRoleEnum.Sitter) {
+                navigate(AppRoute.SitterDashboard, { replace: true });
+            } else if (role === UserRoleEnum.Admin) {
+                navigate(AppRoute.AdminUsers, { replace: true }); // Or a specific AdminDashboard route
+            }
+        }
+    }, [loggedIn, role, navigate]);
+
+    if (loggedIn) { // Render nothing while redirecting
+        return null;
+    }
 
     return (
         <>
@@ -64,11 +67,10 @@ export const HomePage = () => {
                         height: { xs: '60vh', md: '70vh' },
                         display: 'flex',
                         alignItems: 'center',
-                        borderRadius: 2, // Match Petcare
+                        borderRadius: 2,
                         boxShadow: 3
                     }}
                 >
-                    {/* Overlay */}
                     <Box
                         sx={{
                             position: 'absolute',
@@ -76,11 +78,11 @@ export const HomePage = () => {
                             bottom: 0,
                             right: 0,
                             left: 0,
-                            backgroundColor: 'rgba(0,50,150,0.7)', // Similar to Petcare's blue overlay
+                            backgroundColor: 'rgba(0,50,150,0.7)',
                             borderRadius: 'inherit'
                         }}
                     />
-                    <Container maxWidth="md"> {/* Adjusted maxWidth for better text layout */}
+                    <Container maxWidth="md">
                         <Box sx={{ position: 'relative', p: { xs: 3, md: 6 } }}>
                             <Typography component="h1" variant={isMobile ? "h3" : "h2"} color="inherit" gutterBottom fontWeight="bold">
                                 <FormattedMessage id="home.hero.title" />
@@ -157,7 +159,7 @@ export const HomePage = () => {
 
                 {/* CTA Section */}
                 <Box sx={{ bgcolor: 'primary.main', color: 'white', py: 8, borderRadius: 2, mb: 6, boxShadow: 3 }}>
-                    <Container maxWidth="md"> {/* Adjusted maxWidth */}
+                    <Container maxWidth="md">
                         <Grid container justifyContent="center" textAlign="center">
                             <Grid item xs={12}>
                                 <Typography variant={isMobile ? "h4" : "h3"} component="h2" fontWeight="bold" gutterBottom>

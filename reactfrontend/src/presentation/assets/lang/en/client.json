@@ -42,5 +42,7 @@
   "client.sitters.details.noReviews": "No reviews yet for this sitter.",
   "client.sitters.bookNow": "Book Now",
   "client.sitters.noPetsToBook": "You need to add a pet to your profile before you can make a booking.",
+  "client.bookings.searchPlaceholder": "Search by pet, sitter, status, or notes...",
+  "client.pets.searchPlaceholder": "Search pets by name, type, or breed...",
   "client.sitters.selectSitterPrompt": "Select a sitter from the list to view their details."
 }

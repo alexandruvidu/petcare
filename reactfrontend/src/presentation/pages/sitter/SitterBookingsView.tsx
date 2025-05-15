@@ -1,9 +1,9 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState } from 'react'; // Removed useEffect
 import { WebsiteLayout } from "@presentation/layouts/WebsiteLayout";
 import { Seo } from "@presentation/components/ui/Seo";
 import { useIntl, FormattedMessage } from 'react-intl';
-import { Container, Typography, Box, Button, Modal, Paper, Chip, Tooltip, IconButton, Tabs, Tab } from '@mui/material';
-import { useGetMyBookings } from '@infrastructure/apis/api-management'; // useUpdateBooking is in BookingForm
+import { Container, Typography, Box, Modal, Paper, Chip, Tooltip, IconButton, Tabs, Tab } from '@mui/material'; // Removed Button, TextField
+import { useGetMyBookings } from '@infrastructure/apis/api-management';
 import { DataLoadingContainer } from '@presentation/components/ui/LoadingDisplay';
 import { DataTable, DataTableColumn } from '@presentation/components/ui/Tables/DataTable/DataTable';
 import { BookingDTO, BookingStatusEnum, UserRoleEnum } from '@infrastructure/apis/client';
@@ -13,7 +13,7 @@ import { BookingForm } from '@presentation/components/forms/Booking/BookingForm'
 import { BookingDetailDialog } from '@presentation/components/ui/Dialogs/BookingDetailDialog';
 import { BookingCalendarComponent } from '@presentation/components/ui/Tables/BookingCalendar';
 import { dateToDatetimeString } from '@infrastructure/utils/dateUtils';
-// import { toast } from 'react-toastify'; // Not directly used for toast in this component
+// Removed useDebounce
 
 const modalStyle = {
     position: 'absolute' as 'absolute',
@@ -45,11 +45,10 @@ export const SitterBookingsView: React.FC = () => {
 
     const [isFormModalOpen, setIsFormModalOpen] = useState(false);
     const [editingBooking, setEditingBooking] = useState<BookingDTO | undefined>(undefined);
-
     const [detailBooking, setDetailBooking] = useState<BookingDTO | null>(null);
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
-    const [viewMode, setViewMode] = useState<'list' | 'calendar'>('calendar');
+    const [viewMode, setViewMode] = useState<'calendar' | 'list'>('calendar');
     const [page, setPage] = useState(0);
     const [pageSize, setPageSize] = useState(10);
 
@@ -70,35 +69,31 @@ export const SitterBookingsView: React.FC = () => {
 
     const getBookingStatusLabel = (status: BookingStatusEnum): string => {
         switch (status) {
-            case BookingStatusEnum.Pending:
-                return formatMessage({ id: "booking.status.pending" });
-            case BookingStatusEnum.Accepted:
-                return formatMessage({ id: "booking.status.accepted" });
-            case BookingStatusEnum.Rejected:
-                return formatMessage({ id: "booking.status.rejected" });
-            case BookingStatusEnum.Completed:
-                return formatMessage({ id: "booking.status.completed" });
-            default:
-                const exhaustiveCheck: never = status;
-                return String(exhaustiveCheck);
+            case BookingStatusEnum.Pending: return formatMessage({ id: "booking.status.pending" });
+            case BookingStatusEnum.Accepted: return formatMessage({ id: "booking.status.accepted" });
+            case BookingStatusEnum.Rejected: return formatMessage({ id: "booking.status.rejected" });
+            case BookingStatusEnum.Completed: return formatMessage({ id: "booking.status.completed" });
+            default: const exhaustiveCheck: never = status; return String(exhaustiveCheck);
         }
     };
 
     const columns: DataTableColumn<BookingDTO>[] = [
-        { key: 'petName', name: formatMessage({ id: 'pet.name' }), render: (val, entry) => entry.petName || "N/A" },
-        { key: 'clientName', name: formatMessage({ id: 'globals.client' }), render: (val, entry) => entry.clientName || "N/A"},
+        { key: 'petName', name: formatMessage({ id: 'pet.name' }), render: (val, entry) => entry.petName || "N/A", searchable: true },
+        { key: 'clientName', name: formatMessage({ id: 'globals.client' }), render: (val, entry) => entry.clientName || "N/A", searchable: true},
         { key: 'startDate', name: formatMessage({ id: 'booking.startDate' }), render: (value: Date) => dateToDatetimeString(new Date(value)) },
         { key: 'endDate', name: formatMessage({ id: 'booking.endDate' }), render: (value: Date) => dateToDatetimeString(new Date(value)) },
         {
             key: 'status',
             name: formatMessage({ id: 'booking.status' }),
             render: (value: BookingStatusEnum) => (
-                <Chip
-                    label={getBookingStatusLabel(value)} // Use the helper function
-                    color={getStatusChipColor(value)}
-                    size="small"
-                />
+                <Chip label={getBookingStatusLabel(value)} color={getStatusChipColor(value)} size="small" />
             )
+        },
+        {
+            key: 'notes',
+            name: formatMessage({id: 'booking.notes'}),
+            render: (value: string) => value && value.length > 30 ? `${value.substring(0,27)}...` : value,
+            searchable: true
         },
         {
             key: 'actions',
@@ -123,14 +118,14 @@ export const SitterBookingsView: React.FC = () => {
         }
     ];
 
-    const bookings = bookingsDataResponse?.response || [];
+    const allBookings = bookingsDataResponse?.response || [];
 
     return (
         <Fragment>
             <Seo title={formatMessage({ id: 'sitter.bookings.title' })} />
             <WebsiteLayout>
                 <Container maxWidth="xl">
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, flexWrap: 'wrap', gap: 1 }}>
                         <Typography variant="h4" component="h1">
                             <FormattedMessage id="nav.myBookings" />
                         </Typography>
@@ -139,12 +134,12 @@ export const SitterBookingsView: React.FC = () => {
                             <Tab label={formatMessage({id: "viewMode.calendar"})} value="calendar" />
                         </Tabs>
                     </Box>
+
                     <DataLoadingContainer isLoading={isLoading} isError={isError} tryReload={refetch}>
                         {viewMode === 'list' ? (
                             <DataTable
                                 columns={columns}
-                                data={bookings} // Pass full dataset
-                                totalCount={bookings.length}
+                                data={allBookings} // Pass full dataset
                                 page={page}
                                 pageSize={pageSize}
                                 onPageChange={setPage}
@@ -152,10 +147,13 @@ export const SitterBookingsView: React.FC = () => {
                                 isLoading={isLoading}
                                 noDataMessage={formatMessage({id: "sitter.bookings.noBookings"})}
                                 title={formatMessage({id: "sitter.bookings.listTitle"})}
+                                enableSearch={true}
+                                searchPlaceholder={formatMessage({ id: 'sitter.bookings.searchPlaceholder' })}
+                                serverSideOperations={false}
                             />
                         ) : (
                             <BookingCalendarComponent
-                                bookings={bookings}
+                                bookings={allBookings} // Calendar shows all bookings by default
                                 onSelectBooking={handleViewDetails}
                             />
                         )}

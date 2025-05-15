@@ -8,5 +8,21 @@
   "admin.users.confirmDeleteUser": "Are you sure you want to delete {userName}?",
   "admin.users.cannotDeleteSelf": "You cannot delete your own account.",
   "admin.users.deleteSuccess": "User {userName} deleted successfully.",
-  "admin.users.addSuccess": "User {userName} added successfully."
+  "admin.users.addSuccess": "User {userName} added successfully.",
+  "admin.pets.title": "All Pets",
+  "admin.pets.header": "Pet Management",
+  "admin.pets.tableTitle": "All Pets in System",
+  "admin.pets.noPets": "No pets found in the system.",
+  "admin.bookings.title": "All Bookings",
+  "admin.bookings.header": "Booking Management",
+  "admin.bookings.tableTitle": "All Bookings in System",
+  "admin.bookings.noBookings": "No bookings found in the system.",
+  "admin.sitterProfiles.title": "All Sitter Profiles",
+  "admin.sitterProfiles.header": "Sitter Profile Management",
+  "admin.sitterProfiles.tableTitle": "All Sitter Profiles",
+  "admin.sitterProfiles.noProfiles": "No sitter profiles found.",
+  "admin.reviews.title": "All Reviews",
+  "admin.reviews.header": "Review Management",
+  "admin.reviews.tableTitle": "All Reviews in System",
+  "admin.reviews.noReviews": "No reviews found in the system."
 }
