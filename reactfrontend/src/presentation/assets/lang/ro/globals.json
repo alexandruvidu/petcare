@@ -27,5 +27,6 @@
     "globals.validations.emailInvalid": "E-mail invalid.",
     "globals.validations.passwordTooShort": "Parola trebuie să aibă cel puțin 6 caractere.",
     "globals.validations.passwordsDoNotMatch": "Parolele nu se potrivesc.",
-    "globals.validations.phoneInvalid": "Vă rugăm să introduceți un număr de telefon valid de 10 cifre."
+    "globals.validations.phoneInvalid": "Vă rugăm să introduceți un număr de telefon valid de 10 cifre.",
+    "globals.optional": "opțional"
 }

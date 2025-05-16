@@ -4,6 +4,16 @@
   "feedback.commentLabel": "Comentariile Tale",
   "feedback.commentPlaceholder": "Spune-ne ce crezi...",
   "feedback.submitButton": "Trimite Feedback",
-  "feedback.success": "Mulțumim pentru feedback!",
-  "feedback.error": "Feedback-ul nu a putut fi trimis. Te rugăm să încerci din nou."
+  "feedback.success": "Îți mulțumim pentru feedback!",
+  "feedback.error": "Feedback-ul nu a putut fi trimis. Te rugăm să încerci din nou.",
+  "feedback.feedbackTypeLabel": "Tipul Feedback-ului",
+  "feedback.feedbackType.generalinquiry": "Întrebare Generală",
+  "feedback.feedbackType.bugreport": "Raportare Bug",
+  "feedback.feedbackType.featurerequest": "Sugestie Funcționalitate",
+  "feedback.feedbackType.compliment": "Compliment",
+  "feedback.contactPreferenceLabel": "Cum preferi să te contactăm?",
+  "feedback.contactPreference.nocontact": "Nu este nevoie de contact",
+  "feedback.contactPreference.email": "Email",
+  "feedback.contactPreference.phone": "Telefon",
+  "feedback.allowFollowUpLabel": "Sunt de acord să fiu contactat pentru detalii suplimentare despre acest feedback."
 }

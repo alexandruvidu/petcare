@@ -16,7 +16,10 @@ public class FeedbackService(IRepository<WebAppDatabaseContext> repository) : IF
             Rating = dto.Rating,
             Comment = dto.Comment,
             Email = dto.Email,
-            UserId = currentUser?.Id // Associate with logged-in user if available
+            UserId = currentUser?.Id, 
+            FeedbackType = dto.FeedbackType, 
+            ContactPreference = dto.ContactPreference, 
+            AllowFollowUp = dto.AllowFollowUp 
         };
         await repository.AddAsync(feedback, cancellationToken);
         return ServiceResponse.ForSuccess();

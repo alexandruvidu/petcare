@@ -5,5 +5,15 @@
   "feedback.commentPlaceholder": "Tell us what you think...",
   "feedback.submitButton": "Submit Feedback",
   "feedback.success": "Thank you for your feedback!",
-  "feedback.error": "Could not submit feedback. Please try again."
+  "feedback.error": "Could not submit feedback. Please try again.",
+  "feedback.feedbackTypeLabel": "Feedback Type",
+  "feedback.feedbackType.generalinquiry": "General Inquiry",
+  "feedback.feedbackType.bugreport": "Bug Report",
+  "feedback.feedbackType.featurerequest": "Feature Request",
+  "feedback.feedbackType.compliment": "Compliment",
+  "feedback.contactPreferenceLabel": "How should we contact you?",
+  "feedback.contactPreference.nocontact": "No Contact Needed",
+  "feedback.contactPreference.email": "Email",
+  "feedback.contactPreference.phone": "Phone",
+  "feedback.allowFollowUpLabel": "I agree to be contacted for more details regarding this feedback."
 }

@@ -1,5 +1,6 @@
 apis/AuthorizationApi.ts
 apis/BookingApi.ts
+apis/FeedbackApi.ts
 apis/PetApi.ts
 apis/ReviewApi.ts
 apis/SitterProfileApi.ts
@@ -12,8 +13,11 @@ models/BookingDTOListRequestResponse.ts
 models/BookingDTORequestResponse.ts
 models/BookingStatusEnum.ts
 models/BookingUpdateDTO.ts
+models/ContactPreferenceEnum.ts
 models/ErrorCodes.ts
 models/ErrorMessage.ts
+models/FeedbackAddDTO.ts
+models/FeedbackTypeEnum.ts
 models/HttpStatusCode.ts
 models/LoginDTO.ts
 models/LoginResponseDTO.ts

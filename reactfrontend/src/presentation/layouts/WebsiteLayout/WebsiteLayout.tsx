@@ -1,9 +1,9 @@
-import { memo, PropsWithChildren, useState } from "react"; // Added useState
+import { memo, PropsWithChildren, useState } from "react";
 import { Navbar } from "../Navbar";
-import { Box, Container, Typography, Link as MuiLink, Button } from "@mui/material"; // Added Button
+import { Box, Container, Typography, Link as MuiLink, Button } from "@mui/material";
 import { useIntl, FormattedMessage } from "react-intl";
-import { FeedbackDialog } from "@presentation/components/ui/Dialogs/FeedbackDialog/FeedbackDialog"; // Added
-import FeedbackIcon from '@mui/icons-material/Feedback'; // Added
+import { FeedbackDialog } from "@presentation/components/ui/Dialogs/FeedbackDialog/FeedbackDialog";
+import FeedbackOutlinedIcon from '@mui/icons-material/FeedbackOutlined';
 
 export const WebsiteLayout = memo((props: PropsWithChildren<{}>) => {
     const { children } = props;
@@ -46,7 +46,7 @@ export const WebsiteLayout = memo((props: PropsWithChildren<{}>) => {
                     <Button
                         variant="outlined"
                         size="small"
-                        startIcon={<FeedbackIcon />}
+                        startIcon={<FeedbackOutlinedIcon />}
                         onClick={handleOpenFeedbackDialog}
                         sx={{ color: 'text.secondary', borderColor: 'text.secondary', '&:hover': { borderColor: 'text.primary', backgroundColor: 'action.hover'} }}
                     >

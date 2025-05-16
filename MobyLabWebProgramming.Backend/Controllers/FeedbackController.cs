@@ -21,7 +21,15 @@ public class FeedbackController : AuthorizedController // Inherit if you need Ge
     public async Task<ActionResult<RequestResponse>> Add([FromBody] FeedbackAddDTO feedbackDto)
     {
         // GetCurrentUser can be null if the endpoint is public, handle accordingly
-        var currentUser = await GetCurrentUser().ConfigureAwait(false); 
-        return FromServiceResponse(await _feedbackService.AddFeedback(feedbackDto, currentUser.Result, HttpContext.RequestAborted));
+        // For feedback, it's often public, but can be tied to user if logged in.
+        UserDTO? currentUser = null;
+        if (User.Identity?.IsAuthenticated == true) // Check if a token was provided and validated
+        {
+            var userResult = await GetCurrentUser().ConfigureAwait(false); 
+            if(userResult.Result != null) {
+                currentUser = userResult.Result;
+            }
+        }
+        return FromServiceResponse(await _feedbackService.AddFeedback(feedbackDto, currentUser, HttpContext.RequestAborted));
     }
 };

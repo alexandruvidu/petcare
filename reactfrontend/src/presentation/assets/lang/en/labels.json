@@ -15,6 +15,7 @@
     "labels.delete": "Delete",
     "labels.update": "Update",
     "labels.add": "Add",
+    "labels.edit": "Edit",
     "labels.createBooking": "Create Booking",
     "labels.editBooking": "Edit Booking",
     "labels.deleteBooking": "Delete Booking",

@@ -1,5 +1,7 @@
 // MobyLabWebProgramming.Core/DataTransferObjects/FeedbackAddDTO.cs
 using System.ComponentModel.DataAnnotations;
+using MobyLabWebProgramming.Core.Enums; 
+
 public class FeedbackAddDTO
 {
     [Required]
@@ -11,5 +13,12 @@ public class FeedbackAddDTO
     [EmailAddress]
     [StringLength(255)]
     public string? Email { get; set; }
-    // UserId will be taken from current user if logged in, or null
+
+    [Required]
+    public FeedbackTypeEnum FeedbackType { get; set; } 
+
+    [Required]
+    public ContactPreferenceEnum ContactPreference { get; set; } 
+    
+    public bool AllowFollowUp { get; set; } 
 }

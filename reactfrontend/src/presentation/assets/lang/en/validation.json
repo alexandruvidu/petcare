@@ -2,10 +2,13 @@
   "validation.required": "{field} is required.",
   "validation.ageRange": "Age must be a number between 0 and 100.",
   "validation.endDateAfterStartDate": "End date must be after start date.",
-  "validation.maxLength": "Maximum length is {max} characters.",
+  "validation.maxLength": "{name} can be at most {max} characters long.",
   "validation.numberInvalidRange": "Value must be between {min} and {max}.",
   "validation.numberInvalid": "Please enter a valid number.",
-  "validation.ratingMin": "Rating must be at least {min}.",
-  "validation.ratingMax": "Rating must be at most {max}.",
-  "validation.invalidRole": "Invalid role selected."
+  "validation.ratingMin": "Rating must be at least {min} star(s).",
+  "validation.ratingMax": "Rating must be at most {max} star(s).",
+  "validation.ratingRequired": "Please select a rating.",
+  "validation.invalidRole": "Invalid role selected.",
+  "validation.minLength": "{name} must be at least {min} characters long.",
+  "validation.invalidSelection": "Please select a valid option."
 }

@@ -1,13 +1,12 @@
 import React from 'react';
-import { Box, TextField, Button, CircularProgress, Grid, Typography, Rating } from '@mui/material';
+import { Box, TextField, Button, CircularProgress, Grid, Typography, Rating, Select, MenuItem, FormControl, InputLabel, RadioGroup, FormControlLabel, Radio, Checkbox, FormHelperText } from '@mui/material';
 import { Controller, Control, FieldErrors, UseFormHandleSubmit } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { FeedbackFormModel } from './FeedbackForm.types';
+import { FeedbackFormModel, FeedbackType, ContactPreference } from './FeedbackForm.types';
 
 interface FeedbackFormProps {
-    // This is the raw submit function that react-hook-form's handleSubmit will call
     onValidSubmit: (data: FeedbackFormModel) => void;
-    handleSubmitFromController: UseFormHandleSubmit<FeedbackFormModel>; // The handleSubmit from useForm
+    handleSubmitFromController: UseFormHandleSubmit<FeedbackFormModel>;
     control: Control<FeedbackFormModel>;
     errors: FieldErrors<FeedbackFormModel>;
     isSubmitting: boolean;
@@ -25,12 +24,11 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
     const { formatMessage } = useIntl();
 
     return (
-        // Use react-hook-form's handleSubmit to wrap your onValidSubmit function
         <Box component="form" onSubmit={handleSubmitFromController(onValidSubmit)} noValidate sx={{ mt: 1 }}>
             <Grid container spacing={2}>
                 <Grid item xs={12} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                     <Typography component="legend" sx={{ mb: 1 }}>
-                        <FormattedMessage id="feedback.ratingLabel" />
+                        <FormattedMessage id="feedback.ratingLabel" />*
                     </Typography>
                     <Controller
                         name="rating"
@@ -39,7 +37,7 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
                         render={({ field }) => (
                             <Rating
                                 {...field}
-                                value={Number(field.value)} // Ensure value is number for Rating
+                                value={Number(field.value)}
                                 onChange={(event, newValue) => {
                                     field.onChange(newValue);
                                 }}
@@ -70,6 +68,61 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
                     />
                 </Grid>
                 <Grid item xs={12}>
+                    <FormControl fullWidth error={!!errors.feedbackType} required>
+                        <InputLabel id="feedback-type-label"><FormattedMessage id="feedback.feedbackTypeLabel" /></InputLabel>
+                        <Controller
+                            name="feedbackType"
+                            control={control}
+                            defaultValue=""
+                            render={({ field }) => (
+                                <Select
+                                    labelId="feedback-type-label"
+                                    label={<FormattedMessage id="feedback.feedbackTypeLabel" />}
+                                    {...field}
+                                >
+                                    <MenuItem value="" disabled><em><FormattedMessage id="globals.placeholders.selectInput" values={{ fieldName: formatMessage({id: "feedback.feedbackTypeLabel"})}}/></em></MenuItem>
+                                    {Object.values(FeedbackType).map((type) => (
+                                        <MenuItem key={type} value={type}>
+                                            <FormattedMessage id={`feedback.feedbackType.${type.toLowerCase()}`} />
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            )}
+                        />
+                        {errors.feedbackType && <FormHelperText>{errors.feedbackType.message}</FormHelperText>}
+                    </FormControl>
+                </Grid>
+                <Grid item xs={12}>
+                    <FormControl component="fieldset" error={!!errors.contactPreference} required sx={{width: '100%'}}>
+                        <Typography component="legend" variant="subtitle1" sx={{mb:1}}><FormattedMessage id="feedback.contactPreferenceLabel" /></Typography>
+                        <Controller
+                            name="contactPreference"
+                            control={control}
+                            defaultValue=""
+                            render={({ field }) => (
+                                <RadioGroup {...field} row>
+                                    {Object.values(ContactPreference).map((pref) => (
+                                        <FormControlLabel key={pref} value={pref} control={<Radio />} label={<FormattedMessage id={`feedback.contactPreference.${pref.toLowerCase()}`} />} />
+                                    ))}
+                                </RadioGroup>
+                            )}
+                        />
+                        {errors.contactPreference && <FormHelperText>{errors.contactPreference.message}</FormHelperText>}
+                    </FormControl>
+                </Grid>
+                <Grid item xs={12}>
+                    <FormControlLabel
+                        control={
+                            <Controller
+                                name="allowFollowUp"
+                                control={control}
+                                defaultValue={false}
+                                render={({ field }) => <Checkbox {...field} checked={field.value} />}
+                            />}
+                        label={<FormattedMessage id="feedback.allowFollowUpLabel" />}
+                    />
+                </Grid>
+                <Grid item xs={12}>
                     <Controller
                         name="email"
                         control={control}
@@ -79,7 +132,7 @@ export const FeedbackForm: React.FC<FeedbackFormProps> = ({
                                 {...field}
                                 fullWidth
                                 type="email"
-                                label={formatMessage({ id: "globals.email" }) + " (Optional)"}
+                                label={formatMessage({ id: "globals.email" }) + ` (${formatMessage({id: "globals.optional"})})`}
                                 placeholder="your.email@example.com"
                                 error={!!errors.email}
                                 helperText={errors.email?.message}
