@@ -184,15 +184,6 @@ export const AboutPage = () => {
                                     >
                                         <FormattedMessage id="about.cta.getStarted" />
                                     </Button>
-                                    <Button
-                                        component={RouterLink}
-                                        to={AppRoute.Index}
-                                        variant="outlined"
-                                        size="large"
-                                        color="primary"
-                                    >
-                                        <FormattedMessage id="about.cta.giveFeedback" />
-                                    </Button>
                                 </Box>
                             </Grid>
                         </Grid>
